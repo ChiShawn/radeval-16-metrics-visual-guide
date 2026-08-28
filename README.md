@@ -16,7 +16,8 @@
 
 ## 內容說明
 
-- `index.html`：互動式圖文教材
+- `index.html`：零基礎卡通故事版
+- `technical.html`：公式、代入計算與實作 caveat 完整技術版
 - `assets/four-rooms-cartoon-v3.png`：四個評估房間總覽
 - `assets/metric-cartoons/`：16 種指標的卡通教學圖
 

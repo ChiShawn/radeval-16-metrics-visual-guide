@@ -1,0 +1,1440 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RadEval 16 種放射報告評估指標互動圖文手冊">
+  <title>RadEval 16 指標｜記憶型圖文手冊</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #071018;
+      --bg-2: #0b1722;
+      --panel: rgba(14, 29, 42, .88);
+      --panel-2: rgba(20, 39, 54, .82);
+      --text: #edf8ff;
+      --muted: #9cb0bf;
+      --line: rgba(183, 224, 246, .16);
+      --cyan: #50e6ff;
+      --cyan-2: #18a8c7;
+      --lime: #b9f45a;
+      --amber: #ffcc66;
+      --rose: #ff768f;
+      --violet: #b69cff;
+      --shadow: 0 18px 55px rgba(0, 0, 0, .32);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        radial-gradient(circle at 82% 0%, rgba(80, 230, 255, .12), transparent 31rem),
+        radial-gradient(circle at 7% 26%, rgba(182, 156, 255, .10), transparent 28rem),
+        linear-gradient(180deg, var(--bg) 0%, #08131d 45%, #060d14 100%);
+      color: var(--text);
+      font-family: Inter, "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      line-height: 1.65;
+    }
+
+    a { color: var(--cyan); }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    .wrap { width: min(1180px, calc(100% - 36px)); margin: 0 auto; }
+    .skip-link { position: fixed; left: 12px; top: -80px; z-index: 100; padding: 10px 14px; background: #fff; color: #000; }
+    .skip-link:focus { top: 12px; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(18px);
+      background: rgba(7, 16, 24, .77);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .05em; }
+    .brand-mark {
+      width: 34px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(80, 230, 255, .55);
+      border-radius: 50%;
+      color: var(--cyan);
+      box-shadow: inset 0 0 18px rgba(80, 230, 255, .18), 0 0 20px rgba(80, 230, 255, .12);
+    }
+    .topnav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .topnav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      padding: 7px 10px;
+      border-radius: 10px;
+    }
+    .topnav a:hover, .topnav a:focus-visible { color: var(--text); background: rgba(255, 255, 255, .06); }
+
+    .hero { padding: 70px 0 42px; overflow: hidden; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr); gap: 50px; align-items: center; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; color: var(--cyan); font-weight: 800; letter-spacing: .16em; font-size: .78rem; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 38px; height: 2px; background: currentColor; box-shadow: 0 0 12px currentColor; }
+    h1 { margin: 18px 0 18px; font-size: clamp(2.45rem, 7vw, 5.8rem); line-height: .98; letter-spacing: -.055em; max-width: 780px; }
+    h1 .glow { color: var(--cyan); text-shadow: 0 0 25px rgba(80, 230, 255, .24); }
+    .hero-copy { max-width: 680px; color: #bed0dc; font-size: clamp(1.02rem, 2vw, 1.22rem); }
+    .hero-copy strong { color: var(--text); }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(255,255,255,.04);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .button.primary { color: #00151b; background: var(--cyan); border-color: var(--cyan); font-weight: 850; }
+    .button:hover { transform: translateY(-1px); filter: brightness(1.06); }
+    .button:focus-visible, .filter:focus-visible, .close:focus-visible {
+      outline: 3px solid var(--amber);
+      outline-offset: 3px;
+    }
+    .source-note { margin-top: 18px; color: var(--muted); font-size: .84rem; }
+
+    .scanner {
+      position: relative;
+      width: min(420px, 100%);
+      aspect-ratio: 1;
+      margin: auto;
+      display: grid;
+      place-items: center;
+    }
+    .depth-ring {
+      position: absolute;
+      border: 1px solid rgba(80,230,255,.28);
+      border-radius: 50%;
+      box-shadow: 0 0 45px rgba(80,230,255,.09), inset 0 0 45px rgba(80,230,255,.06);
+      pointer-events: none;
+    }
+    .depth-ring span {
+      position: absolute;
+      z-index: 3;
+      left: 50%;
+      top: 0;
+      min-width: 90px;
+      padding: 4px 9px;
+      transform: translate(-50%, -50%);
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      background: rgba(7,16,24,.94);
+      color: #dcecf5;
+      font-size: .72rem;
+      font-weight: 800;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .depth-ring.one { inset: 2%; }
+    .depth-ring.two { inset: 13%; border-style: dashed; }
+    .depth-ring.three { inset: 24%; }
+    .depth-ring.four { inset: 35%; border-style: dashed; }
+    .depth-ring.two span { left: 78%; top: 9%; }
+    .depth-ring.three span { left: 14%; top: 28%; }
+    .depth-ring.four span { left: 82%; top: 66%; }
+    .depth-caption { position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); color: var(--muted); font-size: .72rem; white-space: nowrap; }
+    .chest {
+      position: relative;
+      z-index: 2;
+      width: 52%;
+      height: 66%;
+      border: 2px solid rgba(237,248,255,.48);
+      border-radius: 40% 40% 30% 30% / 24% 24% 52% 52%;
+      background: linear-gradient(90deg, rgba(80,230,255,.07), rgba(182,156,255,.09));
+      box-shadow: inset 0 0 32px rgba(80,230,255,.07);
+    }
+    .spine { position: absolute; left: 50%; top: 11%; bottom: 8%; width: 3px; transform: translateX(-50%); background: rgba(237,248,255,.22); }
+    .lung { position: absolute; top: 18%; width: 38%; height: 61%; border: 1px solid rgba(80,230,255,.72); background: rgba(80,230,255,.08); }
+    .lung.left { left: 8%; border-radius: 50% 38% 48% 58%; }
+    .lung.right { right: 8%; border-radius: 38% 50% 58% 48%; }
+    .heart { position: absolute; left: 46%; top: 52%; width: 28%; aspect-ratio: 1; background: rgba(255,118,143,.35); transform: rotate(45deg); border-radius: 50% 12% 50% 50%; box-shadow: 0 0 25px rgba(255,118,143,.22); }
+    .section { padding: 44px 0; }
+    .section-kicker { color: var(--cyan); font-weight: 800; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; }
+    .section h2 { margin: 7px 0 8px; font-size: clamp(1.75rem, 4vw, 3rem); line-height: 1.15; letter-spacing: -.035em; }
+    .section-lead { margin: 0 0 24px; color: var(--muted); max-width: 760px; }
+
+    .memory-map { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .memory-room {
+      position: relative;
+      min-height: 220px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+      overflow: hidden;
+    }
+    .memory-room::after { content: attr(data-no); position: absolute; right: 8px; bottom: -34px; color: rgba(255,255,255,.035); font-size: 8rem; font-weight: 900; line-height: 1; }
+    .room-icon { font-size: 2.1rem; filter: drop-shadow(0 0 16px rgba(80,230,255,.18)); }
+    .memory-room h3 { margin: 10px 0 6px; font-size: 1.15rem; }
+    .memory-room p { margin: 0 0 12px; color: var(--muted); font-size: .9rem; }
+    .room-list { display: flex; flex-wrap: wrap; gap: 6px; position: relative; z-index: 1; }
+    .room-list span { padding: 4px 8px; border-radius: 8px; background: rgba(255,255,255,.055); color: #d9e8f0; font-size: .77rem; }
+
+    .trap {
+      display: grid;
+      grid-template-columns: .86fr 1.14fr;
+      gap: 24px;
+      padding: 24px;
+      border: 1px solid rgba(255,118,143,.28);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(255,118,143,.09), rgba(14,29,42,.86) 52%);
+      box-shadow: var(--shadow);
+    }
+    .report-pair { display: grid; gap: 12px; }
+    .report { padding: 14px 16px; border-radius: 14px; background: rgba(0,0,0,.25); border: 1px solid var(--line); }
+    .report small { display: block; color: var(--muted); margin-bottom: 5px; }
+    .report strong { font-size: 1.1rem; }
+    .negation { color: var(--rose); text-decoration: underline 3px; text-underline-offset: 4px; }
+    .score-rows { display: grid; gap: 9px; align-content: center; }
+    .score-row { display: grid; grid-template-columns: 136px 1fr 112px; gap: 12px; align-items: center; }
+    .score-name { display: grid; line-height: 1.25; }
+    .score-name b { font-size: .9rem; }
+    .score-name small { color: var(--muted); font-size: .67rem; }
+    .score-track { position: relative; height: 11px; background: rgba(255,255,255,.07); border-radius: 99px; overflow: visible; }
+    .score-fill { height: 100%; border-radius: inherit; background: var(--cyan); }
+    .score-fill.misleading { background: var(--rose); }
+    .score-fill.partial { background: var(--amber); }
+    .score-fill.correct { background: var(--lime); }
+    .score-zero-dot { position: absolute; left: 0; top: 50%; width: 7px; height: 7px; transform: translate(-1px, -50%); border-radius: 50%; background: var(--cyan); box-shadow: 0 0 0 3px rgba(80,230,255,.14); }
+    .score-track.diverging::before { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 2px; transform: translateX(-50%); background: #e7f2f8; }
+    .score-track.diverging::after { content: "0"; position: absolute; left: 50%; top: 13px; transform: translateX(-50%); color: var(--muted); font-size: .62rem; }
+    .score-fill.negative { position: absolute; right: 50%; top: 0; border-radius: 99px 0 0 99px; }
+    .score-value { color: #d8e9f2; font-variant-numeric: tabular-nums; text-align: right; }
+    .score-value small { display: block; color: var(--muted); font-size: .65rem; line-height: 1.25; }
+    .score-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; color: var(--muted); font-size: .68rem; }
+    .score-legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .score-legend i { width: 8px; height: 8px; border-radius: 50%; background: var(--legend-color); }
+    .trap-takeaway { grid-column: 1 / -1; padding-top: 14px; border-top: 1px solid var(--line); color: #dceaf1; }
+    .trap-takeaway strong { color: var(--rose); }
+
+    .chooser {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .chooser-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .field label { display: block; margin-bottom: 7px; color: var(--muted); font-size: .86rem; }
+    select, input[type="search"] {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(5, 14, 21, .8);
+      color: var(--text);
+      padding: 10px 13px;
+      outline: none;
+    }
+    select:focus, input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(80,230,255,.12); }
+    .recommendation { margin-top: 18px; padding: 16px; border-radius: 14px; background: rgba(80,230,255,.08); border: 1px solid rgba(80,230,255,.18); }
+    .recommendation strong { color: var(--cyan); }
+    .recommendation .mini { display: block; margin-top: 4px; color: var(--muted); font-size: .86rem; }
+
+    .toolbar { display: grid; grid-template-columns: minmax(220px, 1fr) auto; gap: 14px; margin: 24px 0 18px; align-items: center; }
+    .filters { display: flex; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
+    .filter {
+      min-height: 39px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    .filter[aria-pressed="true"] { color: #00151b; background: var(--cyan); border-color: var(--cyan); font-weight: 800; }
+    .result-count { color: var(--muted); font-size: .86rem; margin-bottom: 12px; }
+    .empty-state { margin: 14px 0; padding: 18px; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); text-align: center; }
+    .empty-state[hidden] { display: none; }
+
+    .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .metric-card {
+      position: relative;
+      min-height: 290px;
+      display: flex;
+      flex-direction: column;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(150deg, rgba(255,255,255,.052), rgba(255,255,255,.016));
+      text-align: left;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .metric-card::after { content: ""; position: absolute; width: 125px; height: 125px; right: -60px; top: -58px; border-radius: 50%; background: var(--tone); opacity: .12; filter: blur(2px); }
+    .metric-card:hover, .metric-card:focus-visible { transform: translateY(-4px); border-color: var(--tone); border-color: color-mix(in srgb, var(--tone) 60%, transparent); box-shadow: 0 18px 40px rgba(0,0,0,.28); outline: 3px solid transparent; }
+    .metric-card.recommended { border-color: var(--lime); box-shadow: inset 0 0 0 1px rgba(185,244,90,.17), 0 0 28px rgba(185,244,90,.08); }
+    .metric-card[hidden] { display: none; }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .metric-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 14px; background: rgba(80,230,255,.08); background: color-mix(in srgb, var(--tone) 12%, transparent); color: var(--tone); font-size: 1.55rem; border: 1px solid rgba(80,230,255,.2); border-color: color-mix(in srgb, var(--tone) 23%, transparent); }
+    .direction { color: var(--lime); font-size: .78rem; font-weight: 850; }
+    .card-title { display: block; margin: 16px 0 3px; font-size: 1.06rem; font-weight: 800; line-height: 1.28; }
+    .metric-key { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .75rem; }
+    .metaphor { margin: 13px 0; color: #d5e7f0; font-size: .9rem; }
+    .memory-line { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); color: var(--amber); font-size: .82rem; font-weight: 750; }
+    .card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .tag { padding: 3px 7px; border-radius: 7px; background: rgba(255,255,255,.055); color: var(--muted); font-size: .71rem; }
+    .tag.api { color: var(--amber); }
+
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 16px; color: var(--muted); font-size: .82rem; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tone); }
+
+    dialog {
+      width: min(820px, calc(100% - 28px));
+      max-height: 88vh;
+      overflow: hidden;
+      padding: 0;
+      border: 1px solid rgba(80,230,255,.25);
+      border-radius: 24px;
+      background: #0c1924;
+      color: var(--text);
+      box-shadow: 0 30px 100px rgba(0,0,0,.65);
+    }
+    dialog::backdrop { background: rgba(2,8,12,.78); backdrop-filter: blur(7px); }
+    .dialog-shell { padding: 24px; overflow-y: auto; max-height: 88vh; }
+    .dialog-head { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+    .dialog-head h2 { margin: 0; font-size: clamp(1.5rem, 4vw, 2.4rem); line-height: 1.1; }
+    .dialog-sub { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .8rem; }
+    .close { width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.04); cursor: pointer; font-size: 1.2rem; }
+    .dialog-hero { margin: 20px 0; padding: 18px; border-radius: 16px; background: rgba(80,230,255,.06); background: linear-gradient(120deg, color-mix(in srgb, var(--dialog-tone) 13%, transparent), rgba(255,255,255,.025)); border: 1px solid rgba(80,230,255,.2); border-color: color-mix(in srgb, var(--dialog-tone) 24%, transparent); }
+    .dialog-hero .big-memory { color: var(--dialog-tone); font-size: clamp(1.08rem, 3vw, 1.35rem); font-weight: 850; }
+    .principle-panel, .worked-example, .formula-sheet {
+      margin: 18px 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.025);
+    }
+    .lesson-title { display: flex; align-items: center; gap: 9px; margin: 0 0 14px; font-size: 1rem; color: var(--cyan); }
+    .lesson-no { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: rgba(80,230,255,.12); font-size: .76rem; }
+    .visual-stage {
+      min-height: 210px;
+      display: grid;
+      align-content: center;
+      gap: 14px;
+      padding: 20px;
+      border-radius: 16px;
+      background:
+        linear-gradient(rgba(80,230,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(80,230,255,.035) 1px, transparent 1px),
+        rgba(2,10,16,.48);
+      background-size: 24px 24px;
+      overflow: hidden;
+    }
+    .viz-caption { color: var(--muted); font-size: .78rem; text-align: center; }
+    .viz-formula { padding: 8px 12px; border-radius: 10px; background: rgba(80,230,255,.08); color: #dffbff; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .78rem; text-align: center; }
+    .token-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; }
+    .token { padding: 6px 9px; border-radius: 8px; background: rgba(255,255,255,.07); color: #c7d8e1; font-size: .8rem; border: 1px solid transparent; }
+    .token.hit { color: #071018; background: var(--lime); font-weight: 800; }
+    .token.miss { color: #ffe0e6; background: rgba(255,118,143,.14); border-color: rgba(255,118,143,.35); text-decoration: line-through; }
+    .token.soft { color: #f2eaff; background: rgba(182,156,255,.16); border-color: rgba(182,156,255,.28); }
+    .ngram-lane { display: grid; gap: 6px; }
+    .ngram-label { color: var(--muted); font-size: .7rem; text-align: center; }
+    .ngram-window { display: flex; justify-content: center; gap: 5px; width: fit-content; max-width: 100%; margin: auto; padding: 7px; border: 2px solid var(--dialog-tone); border-radius: 12px; background: rgba(80,230,255,.05); }
+    .ngram-window.absent { border-style: dashed; border-color: var(--rose); color: var(--rose); }
+    .ngram-window .token { white-space: nowrap; }
+    .ngram-note { color: #d6e7ef; font-size: .76rem; text-align: center; }
+    .flow-row { display: flex; align-items: center; justify-content: center; gap: 9px; flex-wrap: wrap; }
+    .flow-node { min-width: 92px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.055); text-align: center; font-size: .8rem; }
+    .flow-node strong { display: block; color: var(--text); }
+    .flow-node small { color: var(--muted); }
+    .flow-node.accent { border-color: rgba(80,230,255,.36); box-shadow: inset 0 0 20px rgba(80,230,255,.07); }
+    .flow-arrow { color: var(--cyan); font-size: 1.2rem; font-weight: 900; }
+    .step-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 14px 0 0; padding: 0; list-style: none; counter-reset: step; }
+    .step-list li { position: relative; padding: 12px 12px 12px 38px; border-radius: 12px; background: rgba(255,255,255,.035); color: #cedee6; font-size: .82rem; }
+    .step-list li::before { counter-increment: step; content: counter(step); position: absolute; left: 10px; top: 11px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: var(--dialog-tone); color: #071018; font-size: .7rem; font-weight: 900; }
+    .label-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .label-cell { aspect-ratio: 1.45; display: grid; place-items: center; border-radius: 7px; background: rgba(255,255,255,.055); color: var(--muted); font-size: .65rem; text-align: center; }
+    .label-cell.on { background: rgba(185,244,90,.16); color: var(--lime); box-shadow: inset 0 0 0 1px rgba(185,244,90,.28); }
+    .label-cell.negative { background: rgba(80,230,255,.09); color: var(--cyan); box-shadow: inset 0 0 0 1px rgba(80,230,255,.2); }
+    .label-cell.derived { background: rgba(255,204,102,.08); color: var(--amber); }
+    .label-comparison { display: grid; grid-template-columns: 84px 1fr; gap: 8px 10px; align-items: start; }
+    .label-row-name { padding-top: 7px; color: var(--dialog-tone); font-size: .72rem; font-weight: 800; }
+    .label-comparison .label-grid { grid-template-columns: repeat(7, minmax(62px, 1fr)); }
+    .semantic-core { width: 74px; height: 74px; display: grid; place-items: center; margin: auto; border-radius: 50%; background: rgba(182,156,255,.13); color: var(--violet); font-size: 2rem; box-shadow: 0 0 28px rgba(182,156,255,.16); }
+    .weight-ladder { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+    .weight-step { padding: 9px 7px; border-top: 3px solid var(--amber); background: rgba(255,204,102,.06); color: #e8eef2; font-size: .7rem; text-align: center; }
+    .weight-step strong { display: block; color: var(--amber); font: 800 .9rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .count-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+    .count-chip { padding: 9px; border-radius: 10px; background: rgba(255,255,255,.05); color: var(--muted); font-size: .7rem; text-align: center; }
+    .count-chip strong { display: block; color: var(--text); font-size: .92rem; }
+    .channel-stack { display: grid; gap: 8px; min-width: min(100%, 380px); margin: auto; }
+    .channel { display: grid; grid-template-columns: 92px 1fr 46px; gap: 8px; align-items: center; font-size: .75rem; }
+    .channel-track { height: 8px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; }
+    .channel-fill { height: 100%; width: var(--value); background: var(--dialog-tone); border-radius: inherit; }
+    .graph-svg { width: 100%; min-height: 190px; }
+    .graph-svg text { fill: #e9f6fc; font-family: inherit; font-size: 12px; }
+    .graph-svg .edge { stroke: var(--cyan); stroke-width: 2; opacity: .7; }
+    .graph-svg .node { fill: #102c3c; stroke: var(--cyan); stroke-width: 1.5; }
+    .graph-svg .modifier { fill: #30264c; stroke: var(--violet); }
+    .judge { width: 78px; height: 78px; display: grid; place-items: center; margin: auto; border-radius: 50%; border: 1px solid rgba(255,204,102,.45); background: rgba(255,204,102,.09); font-size: 2rem; box-shadow: 0 0 28px rgba(255,204,102,.1); }
+    .scale { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: end; width: min(430px, 100%); margin: auto; }
+    .scale-pan { min-height: 82px; padding: 10px; border-radius: 50% 50% 12px 12px; background: rgba(255,255,255,.055); border-bottom: 3px solid var(--amber); text-align: center; font-size: .77rem; }
+    .scale-pivot { color: var(--amber); font-size: 2rem; }
+    .example-pair { display: grid; grid-template-columns: 1fr 34px 1fr; gap: 10px; align-items: stretch; }
+    .example-report { padding: 13px; border-radius: 13px; background: rgba(0,0,0,.22); border: 1px solid var(--line); }
+    .example-report small { display: block; color: var(--muted); margin-bottom: 5px; }
+    .example-report p { margin: 0; color: #e2f0f6; font-size: .88rem; }
+    .example-arrow { display: grid; place-items: center; color: var(--cyan); font-size: 1.25rem; }
+    .example-result { margin-top: 12px; padding: 11px 13px; border-left: 3px solid var(--dialog-tone); background: rgba(80,230,255,.05); background: color-mix(in srgb, var(--dialog-tone) 8%, transparent); color: #dceaf1; font-size: .86rem; }
+    .formula-sheet { position: relative; overflow: hidden; }
+    .formula-source-badge { display: inline-flex; align-items: center; gap: 7px; margin: -5px 0 14px; padding: 6px 9px; border: 1px solid rgba(185,244,90,.22); border-radius: 999px; background: rgba(185,244,90,.07); color: var(--lime); font: 700 .7rem/1 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .equation-stack { display: grid; gap: 9px; }
+    .math-block { padding: 13px 15px; overflow-x: auto; border: 1px solid rgba(80,230,255,.17); border-radius: 13px; background: #07131c; color: #e8fbff; font: 700 clamp(.78rem, 2vw, .94rem)/1.65 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: nowrap; }
+    .math-block .eq-label { display: inline-block; min-width: 92px; margin-right: 10px; color: var(--cyan); font: 750 .7rem/1.2 Inter, "Noto Sans TC", sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+    .formula-columns { display: grid; grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr); gap: 12px; margin-top: 13px; }
+    .formula-card { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: rgba(0,0,0,.16); }
+    .formula-card h4 { margin: 0 0 9px; color: var(--amber); font-size: .81rem; }
+    .notation-grid { display: grid; grid-template-columns: auto 1fr; gap: 7px 10px; margin: 0; }
+    .notation-grid dt { color: #f2fbff; font: 800 .78rem/1.45 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .notation-grid dd { margin: 0; color: var(--muted); font-size: .79rem; line-height: 1.45; }
+    .calc-steps { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; counter-reset: calc-step; }
+    .calc-steps li { position: relative; padding-left: 25px; color: #d4e4eb; font-size: .81rem; line-height: 1.5; }
+    .calc-steps li::before { counter-increment: calc-step; content: counter(calc-step); position: absolute; left: 0; top: .12em; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 6px; background: rgba(80,230,255,.12); background: color-mix(in srgb, var(--dialog-tone) 18%, transparent); color: var(--dialog-tone); font: 850 .65rem/1 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .implementation-note { margin-top: 12px; padding: 11px 13px; border-left: 3px solid var(--amber); background: rgba(255,204,102,.065); color: #eadfca; font-size: .8rem; line-height: 1.55; }
+    .implementation-note strong { color: var(--amber); }
+    .source-trace { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 11px; color: var(--muted); font-size: .73rem; }
+    .source-trace a { flex: 0 0 auto; }
+    .dialog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .detail-block { padding: 16px; border-radius: 15px; background: rgba(255,255,255,.035); border: 1px solid var(--line); }
+    .detail-block h3 { margin: 0 0 8px; font-size: .87rem; color: var(--cyan); }
+    .detail-block p { margin: 0; color: #d1e1e9; font-size: .91rem; }
+    .output-code { display: block; margin-top: 8px; color: #d6f8ff; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .78rem; overflow-wrap: anywhere; }
+    .dialog-foot { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-top: 18px; color: var(--muted); font-size: .82rem; }
+
+    .rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .rule { padding: 18px; border: 1px solid var(--line); border-radius: 17px; background: rgba(255,255,255,.03); }
+    .rule strong { display: block; margin-bottom: 6px; color: var(--cyan); }
+    .rule p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    footer { padding: 42px 0 60px; color: var(--muted); border-top: 1px solid var(--line); margin-top: 46px; }
+    .footer-grid { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: end; }
+    .footer-title { color: var(--text); font-weight: 850; font-size: 1.1rem; }
+    .fineprint { max-width: 800px; font-size: .8rem; }
+
+    .print-sheet { display: none; }
+    @media (max-width: 980px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .scanner { width: min(380px, 82vw); }
+      .memory-map, .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .trap { grid-template-columns: 1fr; }
+      .trap-takeaway { grid-column: auto; }
+      .rules { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      .topbar-inner { align-items: flex-start; flex-direction: column; gap: 3px; padding: 8px 0; }
+      .topnav { width: 100%; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; }
+      .topnav a { flex: 0 0 auto; padding: 5px 8px; font-size: .78rem; }
+      .hero { padding-top: 48px; }
+      .memory-map, .metric-grid, .chooser-grid, .dialog-grid, .step-list, .formula-columns { grid-template-columns: 1fr; }
+      .example-pair { grid-template-columns: 1fr; }
+      .example-arrow { transform: rotate(90deg); }
+      .label-grid { grid-template-columns: repeat(4, 1fr); }
+      .channel { grid-template-columns: 78px 1fr 40px; }
+      .toolbar { grid-template-columns: 1fr; }
+      .filters { justify-content: flex-start; }
+      .score-row { grid-template-columns: 102px 1fr 88px; gap: 8px; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .dialog-head { grid-template-columns: auto 1fr auto; }
+      .scanner { width: min(330px, 92vw); }
+      .depth-ring span { min-width: 76px; padding: 3px 7px; font-size: .64rem; }
+      .label-comparison { grid-template-columns: 1fr; }
+      .label-row-name { padding-top: 0; }
+      .label-comparison .label-grid { grid-template-columns: repeat(3, minmax(74px, 1fr)); }
+      .weight-ladder { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; }
+    }
+    @media print {
+      :root { color-scheme: light; }
+      body { background: #fff; color: #111; font-size: 10pt; }
+      .topbar, .hero, .section, footer, dialog { display: none !important; }
+      .print-sheet { display: block; padding: 0; }
+      .print-sheet h1 { font-size: 24pt; color: #111; margin-bottom: 6px; }
+      .print-sheet table { width: 100%; border-collapse: collapse; }
+      .print-sheet th, .print-sheet td { border: 1px solid #bbb; padding: 6px; vertical-align: top; text-align: left; }
+      .print-sheet th { background: #e9f5f8; }
+      .print-sheet small { color: #444; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand"><span class="brand-mark">R</span> RadEval 16</div>
+      <nav class="topnav" aria-label="頁面導覽">
+        <a href="#memory">記憶地圖</a>
+        <a href="#trap">臨床陷阱</a>
+        <a href="#choose">快速選擇</a>
+        <a href="#atlas">16 指標</a>
+        <a href="index-v2.html">卡通版 V2</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">Radiology metric memory atlas</div>
+          <h1>不要背 16 個名字。<br>記住 <span class="glow">4 個房間</span>。</h1>
+          <p class="hero-copy">
+            把 RadEval 想成一座報告品管中心：先看<strong>字面</strong>，再理解<strong>語意</strong>，
+            接著核對<strong>臨床事實</strong>，最後交給<strong>專科裁判</strong>。點任何指標卡，就能依序看原理圖、實例、正式算式、代入計算與實作陷阱。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#atlas">進入 16 指標圖鑑 ↓</a>
+            <a class="button" href="index-v2.html">零基礎卡通版 V2</a>
+            <button class="button" type="button" onclick="window.print()">列印速查表</button>
+          </div>
+          <p class="source-note">依 RadEval 原始碼 d412dc2 固定快照核對｜資料核對日期：2026-08-27</p>
+        </div>
+        <div class="scanner" aria-label="由外而內的四層評估：字面、語意、臨床、專科">
+          <span class="depth-ring one"><span>01 字面</span></span>
+          <span class="depth-ring two"><span>02 語意</span></span>
+          <span class="depth-ring three"><span>03 臨床</span></span>
+          <span class="depth-ring four"><span>04 專科</span></span>
+          <div class="chest" aria-hidden="true">
+            <div class="spine"></div><div class="lung left"></div><div class="lung right"></div><div class="heart"></div>
+          </div>
+          <span class="depth-caption">外 → 內：理解更深、臨床判斷更多</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="memory">
+      <div class="wrap">
+        <div class="section-kicker">Memory palace</div>
+        <h2>四房記憶法</h2>
+        <p class="section-lead">每往裡走一間，理解更深、成本通常也更高。先記「房間功能」，名字自然會歸位。</p>
+        <div class="memory-map">
+          <article class="memory-room" data-no="1">
+            <div class="room-icon">🧩</div>
+            <h3>字詞拼圖室</h3>
+            <p>比對字詞是否重疊。快，但同義改寫可能被冤枉。</p>
+            <div class="room-list"><span>BLEU</span><span>ROUGE</span></div>
+          </article>
+          <article class="memory-room" data-no="2">
+            <div class="room-icon">🧠</div>
+            <h3>語意共振室</h3>
+            <p>用向量找「意思像不像」。仍可能看漏否定詞。</p>
+            <div class="room-list"><span>BERTScore</span><span>RadEval BERTScore</span></div>
+          </article>
+          <article class="memory-room" data-no="3">
+            <div class="room-icon">🩺</div>
+            <h3>臨床核對室</h3>
+            <p>對疾病標籤、實體、關係與同義詞做查核。</p>
+            <div class="room-list"><span>CheXbert</span><span>RadBERT-CT</span><span>RadGraph</span><span>RaTE</span></div>
+          </article>
+          <article class="memory-room" data-no="4">
+            <div class="room-icon">⚖️</div>
+            <h3>專科評審室</h3>
+            <p>結構、時間、綜合模型或 LLM 裁判，各自守一關。</p>
+            <div class="room-list"><span>RadCliQ 家族</span><span>SRR / Temporal</span><span>GREEN 家族</span><span>CRIMSON / RadFact</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="trap">
+      <div class="wrap">
+        <div class="section-kicker">The one example to remember</div>
+        <h2>否定詞翻轉：看起來很像，臨床上完全相反</h2>
+        <p class="section-lead">這一例足以解釋為什麼不能只靠單一字面或通用語意指標。</p>
+        <div class="trap">
+          <div class="report-pair">
+            <div class="report"><small>參考報告 Reference</small><strong><span class="negation">No</span> pleural effusion.</strong></div>
+            <div class="report"><small>模型報告 Candidate</small><strong>Pleural effusion.</strong></div>
+          </div>
+          <div class="score-rows" aria-label="RadEval 官方否定翻轉基準；各列量尺不同，不可直接比較長度">
+            <div class="score-row"><span class="score-name"><b>BLEU</b><small>量尺 0～1</small></span><div class="score-track"><span class="score-zero-dot" aria-hidden="true"></span></div><span class="score-value">0.000<small>字面無命中</small></span></div>
+            <div class="score-row"><span class="score-name"><b>BERTScore</b><small>量尺 0～1</small></span><div class="score-track"><div class="score-fill misleading" style="width:89.3%"></div></div><span class="score-value">0.893<small>誤導性高分</small></span></div>
+            <div class="score-row"><span class="score-name"><b>RadGraph</b><small>量尺 0～1</small></span><div class="score-track"><div class="score-fill partial" style="width:50%"></div></div><span class="score-value">1.000 → 0.500<small>有抓到翻轉</small></span></div>
+            <div class="score-row"><span class="score-name"><b>CRIMSON</b><small>量尺 (−1, 1]</small></span><div class="score-track diverging"><div class="score-fill correct negative" style="width:16.65%"></div></div><span class="score-value">−0.333<small>正確判為重大錯誤</small></span></div>
+            <div class="score-legend" aria-label="顏色說明"><span><i style="--legend-color:var(--rose)"></i>誤導性高分</span><span><i style="--legend-color:var(--amber)"></i>部分辨識</span><span><i style="--legend-color:var(--lime)"></i>正確抓到臨床錯誤</span></div>
+          </div>
+          <div class="trap-takeaway"><strong>記憶釘：</strong>BERTScore 仍給 0.893，因為兩句幾乎只差一個詞；CRIMSON 給負分，因為它在意的是臨床錯誤的嚴重度。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="choose">
+      <div class="wrap">
+        <div class="section-kicker">Five-second selector</div>
+        <h2>忘記要選誰？用兩個問題找回來</h2>
+        <p class="section-lead">這是快速起點，不是唯一答案。正式研究仍建議同時保留便宜基線與至少一種臨床指標。</p>
+        <div class="chooser">
+          <div class="chooser-grid">
+            <div class="field">
+              <label for="modality">影像模態</label>
+              <select id="modality">
+                <option value="any">不限／跨模態</option>
+                <option value="cxr">胸部 X 光 CXR</option>
+                <option value="ct">電腦斷層 CT</option>
+                <option value="mammo">乳房攝影 Mammo</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="goal">最想抓到什麼</label>
+              <select id="goal">
+                <option value="baseline">快速字面基線</option>
+                <option value="semantic">同義改寫／語意相近</option>
+                <option value="finding">疾病標籤是否一致</option>
+                <option value="graph">實體、屬性與關係</option>
+                <option value="temporal">時間變化：new / stable / worsening</option>
+                <option value="overall">整體臨床品質／錯誤嚴重度</option>
+                <option value="factual">原子事實支持度</option>
+              </select>
+            </div>
+          </div>
+          <div class="recommendation" id="recommendation" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="atlas">
+      <div class="wrap">
+        <div class="section-kicker">Interactive metric atlas</div>
+        <h2>16 指標圖鑑</h2>
+        <p class="section-lead">搜尋、篩選，或直接點卡片看完整教材。每一項都含圖解、範例、公式、符號表、代入步驟與固定 commit 的原始碼連結。</p>
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="搜尋名稱、用途、輸出 key…" aria-label="搜尋 16 種指標">
+          <div class="filters" aria-label="依類別篩選">
+            <button class="filter" type="button" data-filter="all" data-label="全部" aria-pressed="true">全部</button>
+            <button class="filter" type="button" data-filter="lexical" data-label="字面" aria-pressed="false">字面</button>
+            <button class="filter" type="button" data-filter="semantic" data-label="語意" aria-pressed="false">語意</button>
+            <button class="filter" type="button" data-filter="clinical" data-label="臨床" aria-pressed="false">臨床</button>
+            <button class="filter" type="button" data-filter="specialized" data-label="專科" aria-pressed="false">專科</button>
+          </div>
+        </div>
+        <div class="result-count" id="resultCount" aria-live="polite">載入指標中…</div>
+        <div class="metric-grid" id="metricGrid"></div>
+        <div class="empty-state" id="emptyState" hidden>找不到符合條件的指標。請清除搜尋字詞或切換類別。</div>
+        <noscript>
+          <div class="empty-state">此互動圖鑑需要 JavaScript 才能開啟公式彈窗。仍可使用上方四房記憶法，或直接查看 <a href="https://github.com/jbdel/RadEval/blob/d412dc2da7df92f72d0b7128aee57b0237ec1b9a/docs/metrics.md">固定版本 Metrics 文件</a>。</div>
+        </noscript>
+        <div class="legend">
+          <span><i class="dot" style="--tone:var(--cyan)"></i>字面</span>
+          <span><i class="dot" style="--tone:var(--violet)"></i>語意</span>
+          <span><i class="dot" style="--tone:var(--lime)"></i>臨床</span>
+          <span><i class="dot" style="--tone:var(--amber)"></i>專科</span>
+          <span>↑ 越高越好</span><span>↕ 注意輸出模式</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-kicker">Three rules</div>
+        <h2>真正不容易忘的 3 條規則</h2>
+        <div class="rules">
+          <article class="rule"><strong>① 便宜不等於安全</strong><p>BLEU、ROUGE 適合 sanity check；BERTScore 適合語意基線。但臨床否定、嚴重度、部位仍要靠臨床指標。</p></article>
+          <article class="rule"><strong>② 模態先決</strong><p>CXR、CT、Mammo 的詞彙與錯誤類型不同。CheXbert 不該拿來替代 CT 的 RadBERT-CT，也不該替代 MammoGREEN。</p></article>
+          <article class="rule"><strong>③ 不要只報一個數</strong><p>最少保留「字面或語意 + 臨床」兩層。若是高風險研究，再加入 LLM 裁判或原子事實檢查。</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-grid">
+      <div>
+        <div class="footer-title">RadEval 16 指標｜記憶型圖文手冊</div>
+        <p class="fineprint">本手冊是學習與選型輔助，不取代原論文、套件版本說明或臨床驗證。速度資料來自 RadEval 公開 benchmark 的單一 A100 工作負載快照，實際值會受報告長度、批次與硬體影響。</p>
+      </div>
+      <div><a href="https://github.com/jbdel/RadEval" target="_blank" rel="noreferrer">原始專案 ↗</a> · <a href="https://github.com/jbdel/RadEval/blob/d412dc2da7df92f72d0b7128aee57b0237ec1b9a/docs/metrics.md" target="_blank" rel="noreferrer">固定版本 Metrics docs ↗</a></div>
+    </div>
+  </footer>
+
+  <dialog id="metricDialog" aria-labelledby="dialogTitle">
+    <div class="dialog-shell">
+      <div class="dialog-head">
+        <div class="metric-icon" id="dialogIcon" aria-hidden="true"></div>
+        <div><h2 id="dialogTitle"></h2><div class="dialog-sub" id="dialogKey"></div></div>
+        <button class="close" type="button" id="dialogClose" aria-label="關閉">×</button>
+      </div>
+      <div class="dialog-hero"><div class="big-memory" id="dialogMemory"></div><div id="dialogMetaphor"></div></div>
+      <section class="principle-panel" aria-labelledby="principleTitle">
+        <h3 class="lesson-title" id="principleTitle"><span class="lesson-no">01</span>原理圖解</h3>
+        <div class="visual-stage" id="dialogVisual"></div>
+        <ol class="step-list" id="dialogSteps"></ol>
+      </section>
+      <section class="worked-example" aria-labelledby="exampleTitle">
+        <h3 class="lesson-title" id="exampleTitle"><span class="lesson-no">02</span>實際範例</h3>
+        <div class="example-pair">
+          <article class="example-report"><small>Reference 參考報告</small><p id="exampleRef"></p></article>
+          <div class="example-arrow" aria-hidden="true">⇄</div>
+          <article class="example-report"><small>Candidate 模型報告</small><p id="exampleCand"></p></article>
+        </div>
+        <div class="example-result" id="exampleResult"></div>
+      </section>
+      <section class="formula-sheet" aria-labelledby="formulaTitle">
+        <h3 class="lesson-title" id="formulaTitle"><span class="lesson-no">03</span>算式與計算細節</h3>
+        <div id="dialogFormula"></div>
+      </section>
+      <h3 class="lesson-title"><span class="lesson-no">04</span>選型與注意事項</h3>
+      <div class="dialog-grid" id="dialogGrid"></div>
+      <div class="dialog-foot"><span id="dialogFoot"></span><a id="dialogSource" href="https://github.com/jbdel/RadEval/blob/d412dc2da7df92f72d0b7128aee57b0237ec1b9a/docs/metrics.md" target="_blank" rel="noreferrer">查看原始文件 ↗</a></div>
+    </div>
+  </dialog>
+
+  <section class="print-sheet" aria-hidden="true">
+    <h1>RadEval 16 指標｜速查表</h1>
+    <small>四房：字面 → 語意 → 臨床 → 專科。↑ 通常越高越好；RadCliQ 請特別核對 aggregate / per-sample 方向。</small>
+    <table id="printTable"></table>
+  </section>
+
+  <script>
+    const tones = {
+      lexical: "var(--cyan)", semantic: "var(--violet)",
+      clinical: "var(--lime)", specialized: "var(--amber)"
+    };
+    const categoryNames = {
+      lexical: "字面", semantic: "語意", clinical: "臨床", specialized: "專科"
+    };
+
+    const metrics = [
+      {
+        id: "bleu", name: "BLEU", key: "bleu", category: "lexical", icon: "🧱",
+        modality: "不限", engine: "CPU", direction: "↑ 越高越像", latency: "0.09 ms／筆", vram: "CPU",
+        metaphor: "像拿 4 塊連續字詞的積木，檢查能不能和參考報告拼在一起。",
+        memory: "BLEU = 背得像不像", what: "預設計算 BLEU-4，衡量候選與參考報告的 n-gram 重疊。",
+        catches: "逐字或近似逐字的重現；適合極便宜的表面一致性基線。",
+        misses: "同義改寫、詞序變化與臨床等價表達可能得到很低分；不能理解否定的臨床含義。",
+        outputs: "bleu；detailed 模式另有 bleu_1 / bleu_2 / bleu_3",
+        use: "快速 sanity check；不要單獨當臨床品質結論。"
+      },
+      {
+        id: "rouge", name: "ROUGE", key: "rouge", category: "lexical", icon: "🧲",
+        modality: "不限", engine: "CPU", direction: "↑ 越高越完整", latency: "0.16 ms／筆", vram: "CPU",
+        metaphor: "像磁鐵把參考報告中的關鍵片段吸回來：有沒有把該說的內容覆蓋到？",
+        memory: "ROUGE = 漏了多少", what: "計算 ROUGE-1、ROUGE-2、ROUGE-L；RadEval 實際回傳各項的 F1，而非單獨 recall。",
+        catches: "內容覆蓋與最長共同子序列；比 BLEU 更像在問『有沒有漏寫』。",
+        misses: "字詞出現不代表臨床正確；重複或錯誤敘述也可能保有重疊。",
+        outputs: "rouge1 / rouge2 / rougeL",
+        use: "需要看內容覆蓋時，和 BLEU 一起當便宜基線。"
+      },
+      {
+        id: "bertscore", name: "BERTScore", key: "bertscore", category: "semantic", icon: "🧠",
+        modality: "不限", engine: "DistilBERT", direction: "↑ 越高越相近", latency: "0.64 ms／筆", vram: "260 MB",
+        metaphor: "不比字面，改比每個詞在上下文中的『語意磁場』是否對得上。",
+        memory: "BERTScore = 意思像不像", what: "以 distilbert-base-uncased 第 5 層的上下文嵌入計算 token 對齊與平均 F1。",
+        catches: "一般同義改寫與語意相似，速度仍很便宜。",
+        misses: "否定詞翻轉可能仍很高；官方基準中 No pleural effusion → Pleural effusion 仍為 0.893。",
+        outputs: "bertscore（mean F1；per_sample 時為每筆列表）",
+        use: "通用語意基線；臨床任務一定搭配否定／實體敏感指標。"
+      },
+      {
+        id: "radeval-bertscore", name: "RadEval BERTScore", key: "radeval_bertscore", category: "semantic", icon: "🩻",
+        modality: "不限", engine: "ModernBERT", direction: "↑ 越高越相近", latency: "1.14 ms／筆", vram: "606 MB",
+        metaphor: "把 BERTScore 送進放射科受訓，讓它更熟影像報告的語言。",
+        memory: "RadEval-BERT = 放射科語意耳", what: "BERTScore 架構，但改用領域調適的 IAMJB/RadEvalModernBERT 放射學 encoder。",
+        catches: "放射報告中的領域語意與零樣本檢索式相似度。",
+        misses: "領域化不等於臨床事實驗證；仍不該取代標籤、關係或 LLM 裁判。",
+        outputs: "radeval_bertscore（mean F1）",
+        use: "想保留語意彈性，又希望 encoder 更懂放射語言時。"
+      },
+      {
+        id: "f1chexbert", name: "F1CheXbert", key: "f1chexbert", category: "clinical", icon: "🗂️",
+        modality: "CXR", engine: "BERT labeler", direction: "↑ 越高越一致", latency: "1.75 ms／筆", vram: "434 MB",
+        metaphor: "像 14 格疾病勾選表：兩份報告勾到的胸片發現一致嗎？",
+        memory: "CheXbert = 胸片 14 格點名", what: "先將報告分類成 14 個 CheXpert condition，再比較多標籤 micro / macro F1。",
+        catches: "CXR 常見疾病標籤的一致、遺漏與翻轉。",
+        misses: "同一疾病內的嚴重度、精細部位與關係；per-sample agreement 的動態範圍可能較窄。",
+        outputs: "6 個 aggregate keys；per_sample 為 f1chexbert_sample_acc_5 / f1chexbert_sample_acc_all",
+        use: "CXR 標籤導向評估或較便宜的 RL reward。"
+      },
+      {
+        id: "f1radbert-ct", name: "F1RadBERT-CT", key: "f1radbert_ct", category: "clinical", icon: "🍩",
+        modality: "CT", engine: "RadBERT-CT", direction: "↑ 越高越一致", latency: "2.03 ms／筆", vram: "485 MB",
+        metaphor: "CT 版的 19 欄點名板：18 個模型 findings，再加 1 個衍生 No finding。",
+        memory: "RadBERT-CT = 18 findings + No finding", what: "使用 IAMJB/RadBERT-CT 對 18 個 CT-specific findings 分類，再加入衍生的 No finding 欄。",
+        catches: "CT 發現層級的標籤一致性。",
+        misses: "自由描述中的細緻關係、時間與原子事實支持度。",
+        outputs: "f1radbert_ct_accuracy / micro_f1 / macro_f1 / weighted_f1；per_sample 為 f1radbert_ct_sample_acc",
+        use: "CT 報告的快速臨床標籤評估。"
+      },
+      {
+        id: "radgraph", name: "F1RadGraph", key: "radgraph", category: "clinical", icon: "🕸️",
+        modality: "CXR", engine: "RadGraph-XL", direction: "↑ 越高越完整", latency: "157.79 ms／筆", vram: "890 MB",
+        metaphor: "把報告畫成『發現—位置—修飾』關係網，再比兩張網。",
+        memory: "RadGraph = 誰、在哪、什麼關係", what: "抽取臨床實體與關係成 knowledge graph，再計算 simple / partial / complete 三層 F1。",
+        catches: "實體、屬性、關係、遺漏與幻覺；比標籤表更細。",
+        misses: "實體 token 對齊仍可能錯過語意等價的改寫；成本約為 CheXbert 的百倍。",
+        outputs: "radgraph_simple / radgraph_partial / radgraph_complete",
+        use: "CXR 需要結構化臨床 grounding 時；RL 常選 radgraph_partial。"
+      },
+      {
+        id: "ratescore", name: "RaTEScore", key: "ratescore", category: "clinical", icon: "🔗",
+        modality: "CXR", engine: "NER + embeddings", direction: "↑ 越高越相符", latency: "52.98 ms／筆", vram: "1130 MB",
+        metaphor: "先圈出醫療實體，再替同義詞牽紅線，不要求字面完全一樣。",
+        memory: "RaTE = 實體同義詞媒人", what: "透過 NER 抽取醫療實體，以同義詞感知 embedding 和學習式 affinity matrix 計算 precision / recall / F1。",
+        catches: "實體層級的同義改寫，比純 token matching 更寬容。",
+        misses: "完整句法關係、時間與整體臨床嚴重度並非核心。",
+        outputs: "ratescore（mean F1）",
+        use: "在意實體正確，又不想被同義詞懲罰時。"
+      },
+      {
+        id: "radgraph-radcliq", name: "RadGraph–RadCliQ", key: "radgraph_radcliq", category: "specialized", icon: "🧬",
+        modality: "CXR", engine: "original RadGraph", direction: "↑ 越高越相符", latency: "160.36 ms／筆", vram: "890 MB",
+        metaphor: "為 RadCliQ-v1 保留的『原廠齒輪』：實體 F1 與關係 F1 各占一半。",
+        memory: "RG–RCQ = RadCliQ 的原裝零件", what: "使用原始 radgraph 模型，逐對計算 (entity_f1 + relation_f1) / 2。",
+        catches: "與 RadCliQ-v1 pipeline 完全對齊的逐筆實體＋關係分數。",
+        misses: "不要和標準 F1RadGraph 混用；兩者模型版本與 reward levels 不同。",
+        outputs: "radgraph_radcliq",
+        use: "需要 per-pair entity+relation F1，或重現 RadCliQ-v1 時。"
+      },
+      {
+        id: "radcliq", name: "RadCliQ-v1", key: "radcliq", category: "specialized", icon: "🎛️",
+        modality: "CXR", engine: "learned composite", direction: "↕ 先看模式", latency: "161.13 ms／筆", vram: "1175 MB",
+        metaphor: "像混音台：把 RadGraph、BERTScore、語意 embedding、BLEU-2 混成一個臨床品質旋鈕。",
+        memory: "RadCliQ = 四聲道總評", what: "以學習式線性模型組合 BERTScore(IDF)、RadGraph、semantic embeddings 與 BLEU-2。",
+        catches: "綜合臨床相關性；公開研究中與放射科醫師偏好有強相關。",
+        misses: "最容易讀反方向：目前 docs 的 aggregate 回傳 1 / mean(raw_scores)，稱 higher is better；per_sample 細節仍是 raw distance，lower is better。使用版本或 RL 前務必核對。",
+        outputs: "radcliq_v1；aggregate 與 per_sample 的方向需分開確認",
+        use: "CXR 最終評估／final-tune；若把 raw distance 當 RL reward，官方建議以負號安全反轉。"
+      },
+      {
+        id: "srrbert", name: "SRRBert", key: "srrbert", category: "specialized", icon: "🏗️",
+        modality: "CXR", engine: "163-label classifier", direction: "↑ 越高越一致", latency: "4.97 ms／筆", vram: "420 MB",
+        metaphor: "先把報告拆成句子，再送進 163 個抽屜，最後比較整份報告的結構。",
+        memory: "SRR = 句子入 163 抽屜", what: "逐句分類為 163 種 finding / status labels，合併到報告層級後算 weighted P/R/F1。",
+        catches: "結構化報告中的發現與狀態分布。",
+        misses: "開放式細緻推理與原子事實支持；分類器未涵蓋的表達可能被壓縮。",
+        outputs: "srrbert_weighted_f1 / weighted_precision / weighted_recall；detailed 可看各 label",
+        use: "需要結構化報告層級評估，但又想維持毫秒級速度時。"
+      },
+      {
+        id: "temporal", name: "Temporal F1", key: "temporal", category: "specialized", icon: "⏳",
+        modality: "CXR", engine: "Stanza NER + rules", direction: "↑ 越高越一致", latency: "17.33 ms／筆", vram: "191 MB",
+        metaphor: "一位只盯時間字眼的稽核員：new、stable、worsening 有沒有說對？",
+        memory: "Temporal = 新、穩、惡化", what: "以 Stanza NER 和關鍵詞抽取 temporal entities，再比對 entity sets 的 F1。",
+        catches: "新出現、穩定、改善、惡化等時間狀態的一致性。",
+        misses: "不負責整體疾病正確性；時間詞正確也不代表部位或嚴重度正確。",
+        outputs: "temporal_f1",
+        use: "追蹤前後片比較、病程變化與 longitudinal report。"
+      },
+      {
+        id: "green", name: "GREEN", key: "green", category: "specialized", icon: "🧑‍⚖️",
+        modality: "CXR", engine: "local 7B LLM", direction: "↑ 越高越好", latency: "≈ 2210 ms／筆", vram: "約 14 GB worker",
+        metaphor: "請一位 7B 放射科裁判讀完兩份報告、寫出比較理由，再給總分。",
+        memory: "GREEN = 本地 7B 總評官", what: "GREEN-radllama2-7B 產生六類重大錯誤與 matched findings；程式解析計數後套用 M/(M+E)。",
+        catches: "整體報告品質與較複雜的臨床錯誤模式。",
+        misses: "速度最慢且硬體重；官方 benchmark 明確建議視為 evaluation-only，不適合每步 RL reward。",
+        outputs: "green；detailed 另有 green_std",
+        use: "離線最終評估，需要可讀比較理由時。"
+      },
+      {
+        id: "mammo-green", name: "MammoGREEN", key: "mammo_green", category: "specialized", icon: "🎗️",
+        modality: "Mammo", engine: "OpenAI / Gemini API", direction: "↑ 越高越好", latency: "≈ 288 ms／筆 API", vram: "CPU／網路",
+        metaphor: "乳攝專科評審，專盯 BI-RADS、乳腺密度、位置與錯誤發現。",
+        memory: "MammoGREEN = 乳攝六項稽核", what: "乳房攝影專用 LLM-as-judge，計數 false / missing finding、mischaracterization、wrong location、BI-RADS 與 density 錯誤。",
+        catches: "Mammo 特有的臨床重大錯誤。",
+        misses: "需要 API、網路與成本治理；不同 provider / model 版本可能影響可重現性。",
+        outputs: "mammo_green；detailed 另有 mammo_green_std",
+        use: "乳房攝影報告專科評估；不要用 CXR 指標硬代替。"
+      },
+      {
+        id: "crimson", name: "CRIMSON", key: "crimson", category: "specialized", icon: "⚖️",
+        modality: "CXR", engine: "MedGemma / OpenAI", direction: "↑ 越高越好", latency: "≈ 379 ms／筆 API", vram: "API 或本地 GPU",
+        metaphor: "不是只數錯誤，而是替每個錯誤秤『臨床有多嚴重』。",
+        memory: "CRIMSON = 錯誤嚴重度秤", what: "比較正向 findings，找 false、missing、attribute errors，並依臨床重要性加權。分數範圍 (−1, 1]。",
+        catches: "否定翻轉、錯誤屬性與臨床重大幻覺；可給負分。",
+        misses: "LLM judge 成本與模型依賴；HF 預設為本地 MedGemma-CRIMSON，OpenAI 為另一 backend。",
+        outputs: "crimson；detailed 另有 crimson_std",
+        use: "需要臨床嚴重度敏感的 CXR 總評，尤其是高風險錯誤。"
+      },
+      {
+        id: "radfact-ct", name: "RadFact-CT", key: "radfact_ct", category: "specialized", icon: "🔬",
+        modality: "CT", engine: "OpenAI API", direction: "↑ 越高越可信", latency: "≈ 238 ms／筆 API", vram: "CPU／網路",
+        metaphor: "把報告切成原子句，雙向盤問：你有證據嗎？對方說的你漏了嗎？",
+        memory: "RadFact = 原子事實雙向審問", what: "將 CT 報告拆成 atomic phrases，做雙向 entailment：candidate 是否被 reference 支持，反向是否覆蓋。",
+        catches: "事實 precision（幻覺）與 recall（遺漏）；可選擇是否過濾陰性／正常 findings。",
+        misses: "依賴 API；原子化與 entailment judge 的行為會受模型版本影響。",
+        outputs: "radfact_ct_precision / recall / f1；aggregate 為百分比，per_sample 為 0～1 比例",
+        use: "CT 報告的 factuality、遺漏與幻覺稽核。"
+      }
+    ];
+
+    const explainers = {
+      "bleu": {
+        steps: ["切成 1～4 個詞的 n-gram", "計算候選片段有多少也出現在參考報告", "乘上長度懲罰，避免只寫很短"],
+        ref: "Mild cardiomegaly with small effusion.",
+        cand: "Mild cardiomegaly.",
+        result: "候選找回前兩個詞，卻短到無法形成 4-gram；BLEU-1 仍有分數，RadEval 預設的 BLEU-4 則接近 0。"
+      },
+      "rouge": {
+        steps: ["把參考報告拆成詞、詞對與最長共同序列", "檢查候選找回多少參考內容", "分別輸出 ROUGE-1、2、L"],
+        ref: "Mild cardiomegaly with small effusion.",
+        cand: "Mild cardiomegaly.",
+        result: "「cardiomegaly」被找回，但「effusion」遺漏；P=1.00、R=0.40，最後 F1=0.571。"
+      },
+      "bertscore": {
+        steps: ["把每個 token 轉成上下文向量", "替候選 token 找最相近的參考 token", "由語意對齊計算 precision、recall、F1"],
+        ref: "No pleural effusion.",
+        cand: "Pleural effusion.",
+        result: "多數 token 的向量仍高度相似，因此官方基準仍得到 0.893；但否定消失後臨床意義已完全相反。"
+      },
+      "radeval-bertscore": {
+        steps: ["使用放射報告調適過的 ModernBERT", "在放射語意空間尋找 token 對應", "沿用 BERTScore 的對齊與 F1"],
+        ref: "Cardiomegaly is present.",
+        cand: "The cardiac silhouette is enlarged.",
+        result: "領域 encoder 更熟悉 cardiomegaly 與 enlarged cardiac silhouette 的關聯；仍需臨床指標檢查否定、部位與嚴重度。"
+      },
+      "f1chexbert": {
+        steps: ["將每份 CXR 報告送入 CheXbert labeler", "產生 14 個 condition 的狀態", "比較兩組標籤並算 micro / macro F1"],
+        ref: "Mild cardiomegaly. No pulmonary edema.",
+        cand: "The heart is mildly enlarged without edema.",
+        result: "字面不同，但 Cardiomegaly 與 Edema 兩個標籤一致；這類同義改寫不會像 BLEU 一樣被重罰。"
+      },
+      "f1radbert-ct": {
+        steps: ["用 RadBERT-CT 讀取 CT 報告", "預測 18 個 findings，再衍生 No finding", "比較 19 欄 exact-match accuracy 與資料集 F1"],
+        ref: "Small right pleural effusion with mild atelectasis.",
+        cand: "A small right pleural effusion and mild atelectatic change.",
+        result: "兩句都應打開 Pleural effusion 與 Atelectasis；若 18 個 findings 加上衍生的 No finding 全部一致，逐筆 exact-match accuracy 為 1。"
+      },
+      "radgraph": {
+        steps: ["辨識 observation、anatomy 與修飾實體", "抽出 located_at、modify 等關係", "用 simple / partial / complete 三層 F1 比圖"],
+        ref: "Small left pleural effusion.",
+        cand: "Left pleural effusion.",
+        result: "疾病與部位相符，但候選漏掉 small；partial 仍可得分，要求實體與關係完整的 complete 會更嚴格。"
+      },
+      "ratescore": {
+        steps: ["先用 NER 圈出醫療實體", "將實體轉成同義詞感知 embedding", "用學習式 affinity 配對後算 P/R/F1"],
+        ref: "Cardiomegaly.",
+        cand: "Enlarged heart.",
+        result: "表面沒有共同疾病詞，但兩個醫療實體在語意空間接近；RaTEScore 會建立同義對應。"
+      },
+      "radgraph-radcliq": {
+        steps: ["用原始 RadGraph 模型抽出實體與關係", "分別計算 entity F1 與 relation F1", "兩者相加後除以 2"],
+        ref: "Left pleural effusion.",
+        cand: "Pleural effusion on the left.",
+        result: "只要抽出的實體集合與 located_at 關係相同，詞序改變仍能相符；這是 RadCliQ-v1 使用的專用子分數。"
+      },
+      "radcliq": {
+        steps: ["同時計算 RadGraph、BERTScore、語意 embedding、BLEU-2", "用訓練時統計量標準化四個通道", "送入學習式線性模型得到綜合分數"],
+        ref: "Mild cardiomegaly.",
+        cand: "The cardiac silhouette is mildly enlarged.",
+        result: "BLEU 可能很低，但 BERTScore 與 semantic embedding 可以補回同義改寫；閱讀結果時務必分清 aggregate 與 raw per-sample 方向。"
+      },
+      "srrbert": {
+        steps: ["先把報告切成句子", "每句分類到 163 種 finding / status", "合併成報告標籤後算 weighted P/R/F1"],
+        ref: "No focal consolidation. Stable cardiomegaly.",
+        cand: "Heart enlargement is unchanged. No airspace opacity.",
+        result: "若兩種表達被歸到相同 finding / status 抽屜，報告層級仍可得到高一致性。"
+      },
+      "temporal": {
+        steps: ["用 NER 與規則找時間詞", "建立 stable、new、worsening 等 entity set", "比較兩組時間實體並算 F1"],
+        ref: "Stable bibasilar atelectasis.",
+        cand: "New bibasilar atelectasis.",
+        result: "疾病完全相同，但 stable 與 new 不一致；Temporal F1 專門把這種病程翻轉抓出來。"
+      },
+      "green": {
+        steps: ["將 reference 與 candidate 一起交給 7B 放射 LLM", "模型按固定格式列出六類錯誤與 matched findings", "程式解析計數，再套用 M / (M + 重大錯誤)"],
+        ref: "Mild cardiomegaly and small left pleural effusion.",
+        cand: "Mild cardiomegaly.",
+        result: "教學判定：matched findings M=1、missing finding=1，其餘重大錯誤為 0，因此 GREEN=1/(1+1)=0.50；實際計數由模型輸出。"
+      },
+      "mammo-green": {
+        steps: ["LLM 讀取兩份乳攝報告", "以結構化 JSON 回傳 matched findings 與 6 類重大錯誤", "程式計算 M / (M + 六類重大錯誤總數)"],
+        ref: "Scattered density. Benign calcifications. BI-RADS 2.",
+        cand: "Heterogeneously dense breasts. Suspicious calcifications. BI-RADS 4.",
+        result: "教學判定：calcifications 核心 finding 配對 M=1；mischaracterization、BI-RADS、density 各錯 1 次，E=3，所以 score=1/(1+3)=0.25。"
+      },
+      "crimson": {
+        steps: ["找出正確、遺漏、虛假與屬性錯誤", "替每個 finding 與屬性錯誤加上臨床重要性權重", "用正確額度與加權錯誤形成 (−1, 1] 分數"],
+        ref: "Mild pulmonary edema.",
+        cand: "Severe pulmonary edema.",
+        result: "教學判定：若 pulmonary edema 的 finding 權重 w=0.5，且嚴重度錯誤權重 a=0.5，則正確額度為 0.25，最後 CRIMSON=0.50。"
+      },
+      "radfact-ct": {
+        steps: ["把兩份 CT 報告各自拆成原子事實", "Candidate → Reference 查支持度，得到 precision", "Reference → Candidate 查覆蓋度，得到 recall，再合成 F1"],
+        ref: "Acute appendicitis. No abscess.",
+        cand: "Acute appendicitis with an abscess.",
+        result: "appendicitis 有支持；abscess 是無支持的新增事實，而且與參考否定相反，因此 precision 與 factual F1 都會下降。"
+      }
+    };
+
+    const sourceCommit = "d412dc2da7df92f72d0b7128aee57b0237ec1b9a";
+    const sourceRoot = `https://github.com/jbdel/RadEval/blob/${sourceCommit}/`;
+
+    const formulaNotes = {
+      "bleu": {
+        equations: [
+          ["修正精確率", "p<sub>n</sub> = Σ<sub>g</sub> min(count<sub>H</sub>(g), count<sub>R</sub>(g)) / Σ<sub>g</sub> count<sub>H</sub>(g)"],
+          ["長度懲罰", "BP = 1（c &gt; r）；否則 BP = exp(1 − r / c)"],
+          ["BLEU-N", "BLEU<sub>N</sub> = BP · exp(Σ<sub>n=1…N</sub> (1/N) · ln p<sub>n</sub>)"]
+        ],
+        symbols: [["H / R", "candidate／reference"], ["g", "某個 n-gram"], ["c / r", "候選與最近參考的 token 數"], ["N", "RadEval 預設 4"]],
+        calculation: ["同一範例：R 有 5 詞，H 是前 2 詞；unigram 命中 2/2，所以 p₁ = 1。", "c = 2、r = 5，因此 BP = exp(1 − 5/2) = exp(−1.5) ≈ 0.223。", "BLEU-1 約為 0.223；RadEval 預設 BLEU-4 因 H 無法形成 3-gram／4-gram而接近 0。"],
+        caveat: "RadEval 使用 COCO-style BleuScorer、closest reference length，並以 tiny/small 常數避免除以 0；因此數學上的 0 在程式中可能是極小正數，顯示時才看起來像 0。",
+        sourcePath: "radeval/metrics/bleu/bleu_scorer.py"
+      },
+      "rouge": {
+        equations: [
+          ["重疊", "P = overlap / |H|，R = overlap / |R|"],
+          ["F1", "F1 = 2PR / (P + R)"],
+          ["ROUGE-L", "overlap = LCS(H, R)；再用同一組 P、R、F1"]
+        ],
+        symbols: [["overlap", "ROUGE-1/2 的共同 n-gram 數"], ["LCS", "最長共同子序列長度"], ["|H| / |R|", "候選／參考的 n-gram 數"]],
+        calculation: ["R：mild cardiomegaly with small effusion（5 詞）；H：mild cardiomegaly（2 詞）。", "ROUGE-1 overlap = 2，所以 P = 2/2 = 1、R = 2/5 = 0.4。", "RadEval 取 fmeasure：F1 = 2×1×0.4/(1+0.4) ≈ 0.571。"],
+        caveat: "文件稱它 recall-oriented，但目前 adapter 明確讀取 rouge_score 的 fmeasure，再對樣本取平均；教材與結果解讀以實作為準。另有 use_stemmer=True。",
+        sourcePath: "radeval/metrics/rouge/adapter.py"
+      },
+      "bertscore": {
+        equations: [
+          ["Precision", "P = (1/|H|) Σ<sub>h∈H</sub> max<sub>r∈R</sub> cos(h, r)"],
+          ["Recall", "R = (1/|R|) Σ<sub>r∈R</sub> max<sub>h∈H</sub> cos(r, h)"],
+          ["F1", "F1 = 2PR / (P + R)"]
+        ],
+        symbols: [["h / r", "上下文化後的候選／參考 token 向量"], ["cos", "餘弦相似度"], ["max", "每個 token 只取最相近的對手"]],
+        calculation: ["同一範例：R 是 No pleural effusion.；H 是 Pleural effusion.。", "必須實際跑 encoder 才能取得 token cosine，不能手填假的 P、R。", "RadEval 官方否定翻轉 benchmark 的逐筆 BERTScore F1=0.893；它高分，卻在臨床上判錯。"],
+        caveat: "RadEval 固定使用 distilbert-base-uncased 第 5 層，對每筆取 F1，再以算術平均形成 aggregate。高語意相似不等於臨床一致，否定詞是典型反例。",
+        sourcePath: "radeval/metrics/bertscore/adapter.py"
+      },
+      "radeval-bertscore": {
+        equations: [
+          ["對齊", "s(h, r) = cos(Φ<sub>Rad</sub>(h), Φ<sub>Rad</sub>(r))"],
+          ["Precision / Recall", "P = mean<sub>h</sub> max<sub>r</sub> s(h,r)，R = mean<sub>r</sub> max<sub>h</sub> s(h,r)"],
+          ["F1", "F1 = 2PR / (P + R)"]
+        ],
+        symbols: [["ΦRad", "IAMJB/RadEvalModernBERT 的上下文 encoder"], ["P / R", "候選精確度／參考覆蓋度"], ["F1", "RadEval 實際輸出的主分數"]],
+        calculation: ["同一範例：cardiomegaly 與 enlarged cardiac silhouette 先由領域模型產生 token embedding。", "最佳 cosine 與 P、R 必須實際跑 IAMJB/RadEvalModernBERT，這裡不捏造數值。", "每筆得到 F1 後直接平均；沒有額外 baseline rescaling。"],
+        caveat: "目前原始碼使用 IAMJB/RadEvalModernBERT、num_layers=22、rescale_with_baseline=False。它改善領域同義詞，不代表已具備完整臨床推理。",
+        sourcePath: "radeval/metrics/radevalbertscore/adapter.py"
+      },
+      "f1chexbert": {
+        equations: [
+          ["每類", "P<sub>ℓ</sub> = TP<sub>ℓ</sub>/(TP<sub>ℓ</sub>+FP<sub>ℓ</sub>)；R<sub>ℓ</sub> = TP<sub>ℓ</sub>/(TP<sub>ℓ</sub>+FN<sub>ℓ</sub>)"],
+          ["F1", "F1<sub>ℓ</sub> = 2P<sub>ℓ</sub>R<sub>ℓ</sub>/(P<sub>ℓ</sub>+R<sub>ℓ</sub>)"],
+          ["加權平均", "F1<sub>w</sub> = Σ<sub>ℓ</sub> support<sub>ℓ</sub>·F1<sub>ℓ</sub> / Σ<sub>ℓ</sub> support<sub>ℓ</sub>"]
+        ],
+        symbols: [["ℓ", "CheXbert condition label"], ["TP/FP/FN", "跨報告、跨標籤的正確／多報／漏報"], ["support", "該標籤在 reference 中的正例數"]],
+        calculation: ["同一範例：兩句若都被 CheXbert 判為 Cardiomegaly=positive、Edema=negative，其餘 12 類狀態也一致。", "此時該筆 f1chexbert_sample_acc_all=1；任一狀態不同則為 0。", "micro／macro／weighted F1 是跨資料集彙總後計算，不能從單一 pair 推成可靠真值。"],
+        caveat: "RadEval 同時回傳 5-condition 與 all-condition 的 micro、macro、weighted F1。per_sample 模式改回傳『整組標籤完全一致』的 sample accuracy，key 也不同。",
+        sourcePath: "radeval/metrics/f1chexbert/adapter.py"
+      },
+      "f1radbert-ct": {
+        equations: [
+          ["二值化", "ŷ<sub>iℓ</sub> = 1[p<sub>iℓ</sub> ≥ 0.5]"],
+          ["F1", "F1 = 2TP / (2TP + FP + FN)"],
+          ["逐筆準確", "acc<sub>i</sub> = 1[ŷ<sub>i,: </sub> = y<sub>i,: </sub>]（全部標籤都相同才得 1）"]
+        ],
+        symbols: [["i / ℓ", "第 i 份報告／第 ℓ 個 CT finding"], ["p", "RadBERT-CT sigmoid 機率"], ["ŷ / y", "candidate／reference 產生的二值標籤"]],
+        calculation: ["同一範例：Pleural effusion=1、Atelectasis=1，其餘 16 findings=0，No finding=0。", "若 reference 與 candidate 的 19 欄完全相同，f1radbert_ct_sample_acc=1；只錯 1 欄即為 0。", "資料集層級再以 sklearn classification_report 算 micro、macro、weighted F1。"],
+        caveat: "原始碼的 LABELS 是 18 個 findings，classification_report 另外加入 No finding，因此評估矩陣實際含 19 欄。這點比只寫『18 類』更精確。",
+        sourcePath: "radeval/metrics/f1Radbert_ct/f1Radbert_ct.py"
+      },
+      "radgraph": {
+        equations: [
+          ["集合 F1", "P = |S<sub>H</sub>∩S<sub>R</sub>|/|S<sub>H</sub>|；R = |S<sub>H</sub>∩S<sub>R</sub>|/|S<sub>R</sub>|；F1 = 2PR/(P+R)"],
+          ["Simple", "S = {(entity tokens, entity label)}"],
+          ["Partial / Complete", "Partial 加 relation-exists；Complete 加 relation type + target tokens"]
+        ],
+        symbols: [["S_H / S_R", "候選／參考抽出的比對 tuple 集合"], ["label", "RadGraph 實體類別"], ["relation", "例如 modify、located_at"]],
+        calculation: ["同一範例的 simple-level 示意：R 抽到 small、left、pleural effusion 共 3 個 tuple；H 抽到 left、pleural effusion 共 2 個。", "若交集為 2，P=2/2=1、R=2/3≈0.667。", "F1=0.8。這是依圖示 tuple 的教學計算；實際 tuple 仍以 RadGraph-XL 抽取結果為準。"],
+        caveat: "RadEval 使用 radgraph-xl。任一側沒有實體時，三層分數直接為 0；complete 的 tuple 會要求關係類型與目標 token 也一致。",
+        sourcePath: "radeval/metrics/radgraph/_vendor/rewards.py"
+      },
+      "ratescore": {
+        equations: [
+          ["單向", "S(A,B) = Σ<sub>i</sub> W(t<sub>i</sub>,t*<sub>i</sub>)·q<sub>i</sub>·cos(e<sub>i</sub>,e*<sub>i</sub>) / Σ<sub>i</sub> W(t<sub>i</sub>,t*<sub>i</sub>)"],
+          ["最佳配對", "e*<sub>i</sub> = argmax<sub>e∈B</sub> cos(e<sub>i</sub>, e)"],
+          ["RaTE", "2·S(R,H)·S(H,R) / (S(R,H)+S(H,R))"]
+        ],
+        symbols: [["e / t", "醫療實體 embedding／NER type"], ["W", "預先搜尋的 type affinity weight"], ["q", "否定類型互撞時的 neg_weight，否則 1"]],
+        calculation: ["同一範例的示意數字（非實測）：cardiomegaly→enlarged heart 為 0.88，反向為 0.80。", "RaTE = 2×0.88×0.80/(0.88+0.80)。", "結果約 0.838；真正分數需執行 NER、BioLORD embedding 與 affinity matrix。"],
+        caveat: "目前實作若任一側完全沒有抽到實體，直接給 0.5，而不是 0。這是特殊 case，做錯誤分析時要特別標記。",
+        sourcePath: "radeval/metrics/RaTEScore/scorer.py"
+      },
+      "radgraph-radcliq": {
+        equations: [
+          ["Entity F1", "F1<sub>E</sub> = F1(E<sub>R</sub>, E<sub>H</sub>)"],
+          ["Relation F1", "F1<sub>Rel</sub> = F1(Rel<sub>R</sub>, Rel<sub>H</sub>)"],
+          ["Pair score", "s<sub>i</sub> = (F1<sub>E,i</sub> + F1<sub>Rel,i</sub>) / 2；aggregate = mean(s<sub>i</sub>)"]
+        ],
+        symbols: [["E", "(tokens, label) 集合"], ["Rel", "(source entity, target entity, relation type) 集合"], ["s_i", "第 i 對報告的分數"]],
+        calculation: ["同一範例的示意數字（非實測）：entity F1=0.80、relation F1=0.60。", "s=(0.80+0.60)/2。", "得到 0.70；真正數字由原始 radgraph 模型抽出的 entity／relation sets 決定。"],
+        caveat: "它刻意使用原始 radgraph 模型，以對齊 RadCliQ-v1；不要和使用 radgraph-xl、輸出 simple/partial/complete 的 F1RadGraph 混為一談。",
+        sourcePath: "radeval/metrics/radgraph_radcliq/radgraph_radcliq.py"
+      },
+      "radcliq": {
+        equations: [
+          ["標準化", "z = (x − μ) / σ；x = [RadGraph, BERTScore, SEmb, BLEU-2]"],
+          ["逐筆 raw", "d<sub>i</sub> = z<sub>i</sub>·[−0.377083683, −0.370300100, −0.252616218, 4.315×10⁻¹²] + 2.467×10⁻¹⁰"],
+          ["Aggregate", "RadCliQ-v1 = 1 / mean(d<sub>i</sub>)"]
+        ],
+        symbols: [["μ", "[0.53792312, 0.61757256, 0.76479421, 0.44738335]"], ["σ", "[0.30282584, 0.22430938, 0.25394391, 0.29892717]"], ["d_i", "線性模型的逐筆 raw score"]],
+        calculation: ["同一範例先實跑 RadGraph、BERTScore(IDF)、CheXbert embedding cosine、BLEU-2，形成 x。", "再用固定 μ、σ 與係數得到該筆 raw dᵢ；沒有四個實測子分數就不應捏造總分。", "多筆完成後才計算 aggregate=1/mean(dᵢ)；per_sample 仍直接回傳 dᵢ。"],
+        caveat: "目前 adapter 的 aggregate 是 1/mean(raw)，所以文件以『越高越好』呈現；per_sample 卻直接回傳 raw dᵢ，方向不能照 aggregate 直讀。BLEU-2 係數在這組模型中幾乎為 0。",
+        sourcePath: "radeval/metrics/RadCliQv1/radcliq.py"
+      },
+      "srrbert": {
+        equations: [
+          ["每標籤", "F1<sub>ℓ</sub> = 2TP<sub>ℓ</sub> / (2TP<sub>ℓ</sub> + FP<sub>ℓ</sub> + FN<sub>ℓ</sub>)"],
+          ["Weighted", "Metric<sub>w</sub> = Σ<sub>ℓ</sub> support<sub>ℓ</sub>·Metric<sub>ℓ</sub> / Σ<sub>ℓ</sub> support<sub>ℓ</sub>"],
+          ["報告合併", "y<sub>report,ℓ</sub> = OR<sub>sentence</sub>(y<sub>sentence,ℓ</sub>)"]
+        ],
+        symbols: [["ℓ", "finding + status label"], ["support", "reference 中該標籤正例數"], ["OR", "任一句命中，就把報告層級標籤打開"]],
+        calculation: ["同一範例先切成 No focal consolidation 與 Stable cardiomegaly 兩句。", "兩句的 163-label 輸出逐欄 OR，reference／candidate 各形成一個報告向量。", "實際 weighted P/R/F1 需跨資料集用 classification_report 彙總，這裡不填示意真值。"],
+        caveat: "目前 adapter 選 leaves_with_statuses，對應 163 個 finding/status labels。aggregate 是 support-weighted；per_sample 則由報告向量直接算每筆 P/R/F1，兩者不是同一種平均。",
+        sourcePath: "radeval/metrics/SRRBert/srr_bert.py"
+      },
+      "temporal": {
+        equations: [
+          ["集合", "T(x) = Stanza temporal entities ∪ regex keyword matches"],
+          ["P / R", "P = (|T(H)∩T(R)|+ε)/(|T(H)|+ε)；R = (|T(H)∩T(R)|+ε)/(|T(R)|+ε)"],
+          ["Temporal F1", "F1 = 2PR / (P + R + ε)"]
+        ],
+        symbols: [["T(x)", "stable、new、worsening 等時間詞集合"], ["ε", "10⁻¹⁰，避免除以 0"], ["∩", "兩份報告共有的時間實體"]],
+        calculation: ["R 的集合是 {stable}，H 的集合是 {new}。", "交集為 0，所以 precision、recall 只剩 ε 尺度。", "Temporal F1 約為 0；若兩側集合都空，程式特判為 1。"],
+        caveat: "reference 空、candidate 非空時回傳 ε；兩側都空則回傳 1。aggregate 是逐筆 F1 的算術平均，不是先合併所有集合再算一次。",
+        sourcePath: "radeval/metrics/f1temporal/f1temporal.py"
+      },
+      "green": {
+        equations: [
+          ["重大錯誤", "E<sub>sig</sub> = Σ<sub>k=a…f</sub> E<sub>sig,k</sub>"],
+          ["GREEN", "GREEN = M / (M + E<sub>sig</sub>)；若 M = 0，GREEN = 0"],
+          ["Aggregate", "mean(GREEN<sub>i</sub>)；detailed 另回傳 population std"]
+        ],
+        symbols: [["M", "LLM 判定的 matched findings 數"], ["E_sig,k", "六類 clinically significant errors"], ["a…f", "false、missing、location、severity、unsupported comparison、omitted change"]],
+        calculation: ["同一範例的教學判定：cardiomegaly 配對，所以 M=1；left pleural effusion 遺漏，所以 E_sig=1。", "其餘五類重大錯誤為 0；輕微錯誤不進分母。", "GREEN=1/(1+1)=0.50。實際 M 與 E 仍由 GREEN 模型輸出。"],
+        caveat: "分數不是 LLM 直接『猜一個數』：模型先按固定格式產生六類錯誤與 matched findings，程式解析計數後才套公式。解析不到必要欄位時可能得到 None。",
+        sourcePath: "radeval/metrics/green_score/green.py"
+      },
+      "mammo-green": {
+        equations: [
+          ["錯誤總數", "E = E<sub>false</sub> + E<sub>missing</sub> + E<sub>mischar</sub> + E<sub>location</sub> + E<sub>BI-RADS</sub> + E<sub>density</sub>"],
+          ["MammoGREEN", "score = M / (M + E)；若 M + E = 0，score = 0"],
+          ["Aggregate", "mean(score<sub>i</sub>)；std 使用 population standard deviation"]
+        ],
+        symbols: [["M", "兩份報告中臨床等價的 matched findings"], ["E", "六類乳攝重大錯誤總數"], ["insignificant", "另行計數，但不進公式"]],
+        calculation: ["同一範例的教學判定：calcifications 核心 finding 配對，所以 M=1。", "mischaracterization、incorrect BI-RADS、incorrect density 各 1 次，E=3。", "score=1/(1+3)=0.25；實際分類由所選 provider／model 輸出。"],
+        caveat: "目前實作以結構化 JSON 強制六個 significant_errors key；這不是任意自然語言分數。模型 provider 會影響錯誤計數的一致性，需固定 provider、model 與 prompt 版本。",
+        sourcePath: "radeval/metrics/green_score/mammo_green.py"
+      },
+      "crimson": {
+        equations: [
+          ["Finding 權重", "w = {urgent:1, actionable:0.5, non-actionable:0.25, benign:0}"],
+          ["正確額度", "C<sub>j</sub> = w<sub>j</sub>（無屬性錯）；否則 w<sub>j</sub>²/(w<sub>j</sub> + Σ a<sub>e</sub>)，a<sub>e</sub>∈{0.5,0}"],
+          ["主分數", "S = (ΣC<sub>j</sub> − E<sub>false</sub>) / N<sub>G</sub>；N<sub>G</sub> = Σ reference finding weights"]
+        ],
+        symbols: [["E_false", "false predicted findings 的加權和"], ["a_e", "significant attribute error=0.5；negligible=0"], ["N_G", "reference 正向發現的總臨床權重"]],
+        calculation: ["同一範例的教學判定：pulmonary edema 為 actionable，w=0.5；mild→severe 是 significant attribute error，a=0.5。", "C=0.5²/(0.5+0.5)=0.25；N_G=0.5；沒有 false finding。", "S=(0.25−0)/0.5=0.5，因此 CRIMSON=0.5。實際權重類別由 judge 判定。"],
+        caveat: "若 S&lt;0 且 E_false−correct&gt;0，程式改用 −(E_false−correct)/(1+E_false−correct)，把負分壓在 (−1,0)；missing finding 不另加罰，而是留在 N_G、卻沒有 correct credit。只評估 abnormal/positive findings。",
+        sourcePath: "radeval/metrics/crimson/crimson.py"
+      },
+      "radfact-ct": {
+        equations: [
+          ["Logical precision", "P = # candidate phrases entailed by reference / # candidate phrases"],
+          ["Logical recall", "R = # reference phrases entailed by candidate / # reference phrases"],
+          ["F1", "F1 = 2PR / (P + R)"]
+        ],
+        symbols: [["phrase", "LLM 先拆出的 CT atomic phrase"], ["entailed", "第二次 LLM NLI 判為 entailment"], ["P / R", "防 hallucination／防 omission 的雙向視角"]],
+        calculation: ["同一範例：Candidate atoms 為 appendicitis、abscess；只有 appendicitis 被支持，所以 P=1/2=0.5。", "Reference atoms 為 appendicitis、no abscess；只有 appendicitis 被覆蓋，所以 R=1/2=0.5。", "逐筆 F1=0.5；aggregate 會顯示成 50.00。"],
+        caveat: "aggregate 先對逐筆 P、R 做 nanmean，再各乘 100，最後由這兩個平均值重算 F1；但 per_sample adapter 直接回傳 0～1 的比例。空 phrase list 會產生 NaN，再由 aggregate 忽略。",
+        sourcePath: "radeval/metrics/radfact_ct/radfact_ct.py"
+      }
+    };
+
+    function renderFormulaSheet(note) {
+      const equations = note.equations.map(([label, equation]) =>
+        `<div class="math-block"><span class="eq-label">${label}</span>${equation}</div>`
+      ).join("");
+      const symbols = note.symbols.map(([symbol, meaning]) =>
+        `<dt>${symbol}</dt><dd>${meaning}</dd>`
+      ).join("");
+      const calculation = note.calculation.map((step) => `<li>${step}</li>`).join("");
+      const sourceUrl = `${sourceRoot}${note.sourcePath}`;
+      return `
+        <div class="formula-source-badge">✓ SOURCE-AUDITED · RadEval @ ${sourceCommit.slice(0, 7)}</div>
+        <div class="equation-stack">${equations}</div>
+        <div class="formula-columns">
+          <section class="formula-card"><h4>符號表</h4><dl class="notation-grid">${symbols}</dl></section>
+          <section class="formula-card"><h4>代入／執行順序</h4><ol class="calc-steps">${calculation}</ol></section>
+        </div>
+        <div class="implementation-note"><strong>實作注意：</strong>${note.caveat}</div>
+        <div class="source-trace"><span>固定到本次核對的 commit，避免 main 分支日後改動造成教材漂移。</span><a href="${sourceUrl}" target="_blank" rel="noreferrer">對照這段原始碼 ↗</a></div>`;
+    }
+
+    const chexbertLabels = [
+      "Atelectasis", "Cardiomegaly", "Consolidation", "Edema",
+      "Enlarged Cardiomediastinum", "Fracture", "Lung Lesion",
+      "Lung Opacity", "No Finding", "Pleural Effusion", "Pleural Other",
+      "Pneumonia", "Pneumothorax", "Support Devices"
+    ];
+
+    const radbertCtLabels = [
+      "Medical material", "Arterial wall calcification", "Cardiomegaly",
+      "Pericardial effusion", "Coronary artery wall calcification",
+      "Hiatal hernia", "Lymphadenopathy", "Emphysema", "Atelectasis",
+      "Lung nodule", "Lung opacity", "Pulmonary fibrotic sequela",
+      "Pleural effusion", "Mosaic attenuation pattern",
+      "Peribronchial thickening", "Consolidation", "Bronchiectasis",
+      "Interlobular septal thickening", "No finding"
+    ];
+
+    function labelCells(labels, stateFor) {
+      return labels.map((label) => {
+        const state = stateFor(label);
+        const suffix = state === "on" ? " · +" : state === "negative" ? " · −" : state === "derived" ? " · 0（衍生）" : " · ∅";
+        return `<span class="label-cell ${state}">${label}${suffix}</span>`;
+      }).join("");
+    }
+
+    const principleVisuals = {
+      "bleu": () => `
+        <div class="ngram-lane"><div class="ngram-label">Reference：4-token 滑動窗 1</div><div class="ngram-window"><span class="token">mild</span><span class="token">cardiomegaly</span><span class="token">with</span><span class="token">small</span></div></div>
+        <div class="ngram-lane"><div class="ngram-label">向右滑一格：4-token 滑動窗 2</div><div class="ngram-window"><span class="token">cardiomegaly</span><span class="token">with</span><span class="token">small</span><span class="token">effusion</span></div></div>
+        <div class="ngram-lane"><div class="ngram-label">Candidate：只有 2 tokens</div><div class="ngram-window absent"><span class="token">mild</span><span class="token">cardiomegaly</span></div><div class="ngram-note">不足 4 詞 → 沒有任何 candidate 4-gram 可命中</div></div>
+        <div class="viz-formula">BLEU-4 看連續四詞；不是把單一 token 塗成命中就結束</div>`,
+      "rouge": () => `
+        <div class="token-row"><span class="token hit">mild</span><span class="token hit">cardiomegaly</span><span class="token miss">with</span><span class="token miss">small</span><span class="token miss">effusion</span></div>
+        <div class="flow-row"><div class="flow-node"><strong>P = 2/2 = 1.00</strong><small>候選寫出的詞有多準</small></div><div class="flow-node"><strong>R = 2/5 = 0.40</strong><small>參考內容找回多少</small></div><div class="flow-node accent"><strong>F1 = 0.571</strong><small>RadEval 實際回傳</small></div></div>
+        <div class="viz-formula">ROUGE 的記憶重點偏覆蓋，但 adapter 輸出是 P 與 R 的 F1</div>`,
+      "bertscore": () => `
+        <div class="semantic-core" aria-hidden="true">🧠</div>
+        <div class="token-row"><span class="token miss">no</span><span class="flow-arrow">↔</span><span class="token miss">∅</span></div>
+        <div class="token-row"><span class="token soft">pleural</span><span class="flow-arrow">↔</span><span class="token soft">pleural</span><span class="token soft">effusion</span><span class="flow-arrow">↔</span><span class="token soft">effusion</span></div>
+        <div class="viz-caption">大多數 token 語意仍高度對齊；一個遺失的 no 卻足以翻轉臨床意義</div>`,
+      "radeval-bertscore": () => `
+        <div class="flow-row"><div class="flow-node"><strong>cardiomegaly</strong><small>reference token</small></div><span class="flow-arrow">→</span><div class="semantic-core" aria-hidden="true">🩻</div><span class="flow-arrow">←</span><div class="flow-node"><strong>enlarged cardiac silhouette</strong><small>candidate tokens</small></div></div>
+        <div class="viz-formula">放射領域 embedding → token 最佳對齊 → P / R / F1</div>`,
+      "f1chexbert": () => `
+        <div class="label-comparison"><div class="label-row-name">Reference</div><div class="label-grid">${labelCells(chexbertLabels, (label) => label === "Cardiomegaly" ? "on" : label === "Edema" ? "negative" : "")}</div><div class="label-row-name">Candidate</div><div class="label-grid">${labelCells(chexbertLabels, (label) => label === "Cardiomegaly" ? "on" : label === "Edema" ? "negative" : "")}</div></div>
+        <div class="viz-caption">+ = positive　− = explicitly negative　∅ = not mentioned；兩列逐欄比較後才計算 F1／sample accuracy</div>`,
+      "f1radbert-ct": () => `
+        <div class="label-grid">${labelCells(radbertCtLabels, (label) => ["Atelectasis", "Pleural effusion"].includes(label) ? "on" : label === "No finding" ? "derived" : "")}</div>
+        <div class="viz-caption">18 個模型 findings + 1 個衍生 No finding = 19 欄評估矩陣</div>
+        <div class="viz-formula">Reference 19 欄 ⇄ Candidate 19 欄 → exact-match accuracy / micro / macro / weighted F1</div>`,
+      "radgraph": () => `
+        <div class="flow-row" role="img" aria-label="small 修飾 pleural effusion；pleural effusion 位於 left pleura"><div class="flow-node"><strong>small</strong><small>modifier</small></div><span class="flow-arrow">modify →</span><div class="flow-node accent"><strong>pleural effusion</strong><small>observation</small></div><span class="flow-arrow">located_at →</span><div class="flow-node"><strong>left pleura</strong><small>anatomy</small></div></div>
+        <div class="viz-formula">Candidate 漏掉 small → simple / partial / complete 各用不同 tuple 嚴格度比對</div>`,
+      "ratescore": () => `
+        <div class="flow-row"><div class="flow-node"><strong>Cardiomegaly</strong><small>NER entity A</small></div><span class="flow-arrow">≈</span><div class="flow-node"><strong>Enlarged heart</strong><small>NER entity B</small></div></div>
+        <div class="channel-stack"><div class="channel"><span>Affinity</span><div class="channel-track"><div class="channel-fill" style="--value:88%"></div></div><strong>示意 0.88</strong></div></div>
+        <div class="viz-formula">NER type weight × synonym cosine × negation penalty → 雙向 harmonic mean</div>`,
+      "radgraph-radcliq": () => `
+        <div class="channel-stack"><div class="channel"><span>Entity F1</span><div class="channel-track"><div class="channel-fill" style="--value:80%"></div></div><strong>示意 0.80</strong></div><div class="channel"><span>Relation F1</span><div class="channel-track"><div class="channel-fill" style="--value:60%"></div></div><strong>示意 0.60</strong></div></div>
+        <div class="flow-row"><span class="token hit">0.80</span><span class="flow-arrow">＋</span><span class="token hit">0.60</span><span class="flow-arrow">÷ 2</span><span class="token soft">0.70</span></div>
+        <div class="viz-formula">示意數字；真正值來自同一 pair 的 entity / relation sets</div>`,
+      "radcliq": () => `
+        <div class="channel-stack"><div class="channel"><span>RadGraph</span><div class="channel-track"><div class="channel-fill" style="--value:78%"></div></div><strong>RG</strong></div><div class="channel"><span>BERTScore</span><div class="channel-track"><div class="channel-fill" style="--value:86%"></div></div><strong>BS</strong></div><div class="channel"><span>Semantic</span><div class="channel-track"><div class="channel-fill" style="--value:82%"></div></div><strong>SE</strong></div><div class="channel"><span>BLEU-2</span><div class="channel-track"><div class="channel-fill" style="--value:30%"></div></div><strong>BL</strong></div></div>
+        <div class="viz-formula">實跑四通道 → 固定 μ/σ 標準化 → 線性 raw dᵢ → aggregate 取 1/mean(dᵢ)</div>`,
+      "srrbert": () => `
+        <div class="flow-row"><div class="flow-node"><strong>Sentence 1</strong><small>No focal consolidation</small></div><div class="flow-node"><strong>Sentence 2</strong><small>Stable cardiomegaly</small></div><span class="flow-arrow">→</span><div class="flow-node accent"><strong>163 labels</strong><small>finding + status</small></div><span class="flow-arrow">→</span><div class="flow-node"><strong>OR merge</strong><small>report vector</small></div></div>
+        <div class="viz-formula">跨資料集 classification report → weighted P / R / F1</div>`,
+      "temporal": () => `
+        <div class="flow-row"><div class="flow-node"><strong>Reference</strong><small>stable atelectasis</small></div><span class="flow-arrow">∩ = ∅</span><div class="flow-node accent"><strong>Candidate</strong><small>new atelectasis</small></div></div>
+        <div class="token-row"><span class="token hit">T(R)={stable}</span><span class="token miss">T(H)={new}</span></div>
+        <div class="viz-formula">時間集合無交集 → Temporal F1 ≈ 0</div>`,
+      "green": () => `
+        <div class="flow-row"><div class="flow-node"><strong>Reference + Candidate</strong><small>成對輸入</small></div><span class="flow-arrow">→</span><div class="judge">🧑‍⚖️</div><span class="flow-arrow">→</span><div class="flow-node accent"><strong>固定格式</strong><small>M + 六類錯誤計數</small></div></div>
+        <div class="count-strip"><div class="count-chip"><strong>M = 1</strong>cardiomegaly 配對</div><div class="count-chip"><strong>E<sub>missing</sub> = 1</strong>effusion 遺漏</div><div class="count-chip"><strong>其餘 E = 0</strong>五類無錯</div></div>
+        <div class="viz-formula">程式解析計數後才算 GREEN = 1 / (1 + 1) = 0.50</div>`,
+      "mammo-green": () => `
+        <div class="label-grid">${["False finding","Missing finding","Mischaracterization","Wrong location","Incorrect BI-RADS","Incorrect density"].map((label) => `<span class="label-cell ${["Mischaracterization","Incorrect BI-RADS","Incorrect density"].includes(label)?"on":""}">${label}</span>`).join("")}</div>
+        <div class="count-strip"><div class="count-chip"><strong>M = 1</strong>calcifications 配對</div><div class="count-chip"><strong>E = 3</strong>三類重大錯誤</div><div class="count-chip"><strong>score = 0.25</strong>1 / (1 + 3)</div></div>`,
+      "crimson": () => `
+        <div class="weight-ladder"><div class="weight-step"><strong>w=1.0</strong>urgent</div><div class="weight-step"><strong>w=0.5</strong>actionable</div><div class="weight-step"><strong>w=0.25</strong>non-actionable</div><div class="weight-step"><strong>w=0</strong>benign / expected</div></div>
+        <div class="scale"><div class="scale-pan"><strong>finding credit</strong><br>w=0.5</div><div class="scale-pivot">⚖</div><div class="scale-pan"><strong>attribute error</strong><br>significant a=0.5</div></div>
+        <div class="viz-formula">C = 0.5²/(0.5+0.5)=0.25 → CRIMSON=0.50；範圍 (−1, 1]</div>`,
+      "radfact-ct": () => `
+        <div class="flow-row"><div class="flow-node"><strong>Candidate atoms</strong><small>appendicitis ✓ · abscess ✕</small></div><span class="flow-arrow">→ P=1/2</span><div class="flow-node accent"><strong>Reference atoms</strong><small>appendicitis ✓ · no abscess ✕</small></div></div>
+        <div class="flow-row"><div class="flow-node"><strong>Precision = 0.5</strong><small>防 hallucination</small></div><span class="flow-arrow">⇄</span><div class="flow-node"><strong>Recall = 0.5</strong><small>防 omission</small></div></div>
+        <div class="viz-formula">同一範例：雙向 entailment → per-sample F1 = 0.5</div>`
+    };
+
+    function principleVisual(id) {
+      const render = principleVisuals[id];
+      if (!render) {
+        return `<div class="viz-caption">此指標尚未建立原理圖；請查看下方算式與原始碼。</div>`;
+      }
+      return render();
+    }
+
+    const grid = document.getElementById("metricGrid");
+    const search = document.getElementById("search");
+    const resultCount = document.getElementById("resultCount");
+    const emptyState = document.getElementById("emptyState");
+    const dialog = document.getElementById("metricDialog");
+    let activeFilter = "all";
+    let recommendedIds = new Set();
+
+    function metricSearchText(metric) {
+      const searchableFields = [
+        metric.name, metric.key, metric.metaphor, metric.memory, metric.what,
+        metric.outputs, metric.modality
+      ];
+      return searchableFields.join(" ").toLowerCase();
+    }
+
+    function updateFilterCounts() {
+      document.querySelectorAll(".filter").forEach((button) => {
+        const filter = button.dataset.filter;
+        const count = filter === "all"
+          ? metrics.length
+          : metrics.filter((metric) => metric.category === filter).length;
+        button.textContent = `${button.dataset.label} ${count}`;
+      });
+    }
+
+    function renderCards() {
+      grid.innerHTML = metrics.map((metric) => `
+        <button type="button" class="metric-card" data-id="${metric.id}" data-category="${metric.category}"
+          style="--tone:${tones[metric.category]}">
+          <span class="card-top"><span class="metric-icon" aria-hidden="true">${metric.icon}</span><span class="direction">${metric.direction}</span></span>
+          <span class="card-title">${metric.name}</span>
+          <span class="metric-key">"${metric.key}"</span>
+          <span class="metaphor">${metric.metaphor}</span>
+          <span class="memory-line">⌁ ${metric.memory}</span>
+          <span class="card-meta"><span class="tag">${categoryNames[metric.category]}</span><span class="tag">${metric.modality}</span><span class="tag ${metric.engine.includes("API") ? "api" : ""}">${metric.engine}</span></span>
+        </button>`).join("");
+      grid.querySelectorAll(".metric-card").forEach((card) => {
+        card.addEventListener("click", () => openMetric(card.dataset.id));
+      });
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const query = search.value.trim().toLowerCase();
+      let shown = 0;
+      grid.querySelectorAll(".metric-card").forEach((card) => {
+        const metric = metrics.find((item) => item.id === card.dataset.id);
+        const categoryMatch = activeFilter === "all" || metric.category === activeFilter;
+        const searchMatch = !query || metricSearchText(metric).includes(query);
+        card.hidden = !(categoryMatch && searchMatch);
+        card.classList.toggle("recommended", recommendedIds.has(metric.id));
+        if (!card.hidden) shown += 1;
+      });
+      resultCount.textContent = `顯示 ${shown} / ${metrics.length}`;
+      emptyState.hidden = shown !== 0;
+    }
+
+    function openMetric(id) {
+      const metric = metrics.find((item) => item.id === id);
+      const explainer = explainers[id];
+      const formula = formulaNotes[id];
+      document.querySelector(".dialog-shell").scrollTop = 0;
+      document.getElementById("dialogIcon").textContent = metric.icon;
+      document.getElementById("dialogIcon").style.setProperty("--tone", tones[metric.category]);
+      document.getElementById("dialogTitle").textContent = metric.name;
+      document.getElementById("dialogKey").textContent = `RadEval key: "${metric.key}" · ${categoryNames[metric.category]}指標 · ${metric.modality}`;
+      document.getElementById("dialogMemory").textContent = `⌁ ${metric.memory}`;
+      document.getElementById("dialogMetaphor").textContent = metric.metaphor;
+      document.querySelector(".dialog-hero").style.setProperty("--dialog-tone", tones[metric.category]);
+      document.querySelector(".principle-panel").style.setProperty("--dialog-tone", tones[metric.category]);
+      document.querySelector(".worked-example").style.setProperty("--dialog-tone", tones[metric.category]);
+      document.querySelector(".formula-sheet").style.setProperty("--dialog-tone", tones[metric.category]);
+      document.getElementById("dialogVisual").innerHTML = principleVisual(id);
+      document.getElementById("dialogSteps").innerHTML = explainer.steps.map((step) => `<li>${step}</li>`).join("");
+      document.getElementById("exampleRef").textContent = explainer.ref;
+      document.getElementById("exampleCand").textContent = explainer.cand;
+      document.getElementById("exampleResult").textContent = explainer.result;
+      document.getElementById("dialogFormula").innerHTML = renderFormulaSheet(formula);
+      document.getElementById("dialogGrid").innerHTML = `
+        <section class="detail-block"><h3>它怎麼看報告</h3><p>${metric.what}</p></section>
+        <section class="detail-block"><h3>最擅長抓到</h3><p>${metric.catches}</p></section>
+        <section class="detail-block"><h3>最容易漏掉／誤讀</h3><p>${metric.misses}</p></section>
+        <section class="detail-block"><h3>何時用</h3><p>${metric.use}</p></section>
+        <section class="detail-block"><h3>分數與速度</h3><p>${metric.direction}<br>${metric.latency} · ${metric.vram}</p></section>
+        <section class="detail-block"><h3>輸出 key</h3><p><span class="output-code">${metric.outputs}</span></p></section>`;
+      document.getElementById("dialogFoot").textContent = `${metric.engine} · benchmark 速度僅供相對比較`;
+      document.getElementById("dialogSource").href = `${sourceRoot}${formula.sourcePath}`;
+      document.getElementById("dialogSource").textContent = "查看對應原始碼 ↗";
+      dialog.showModal();
+    }
+
+    function updateRecommendation() {
+      const modality = document.getElementById("modality").value;
+      const goal = document.getElementById("goal").value;
+      let ids = [];
+      let reason = "";
+      if (modality === "mammo") {
+        ids = ["mammo-green"];
+        reason = "乳房攝影先用專科裁判，因為 BI-RADS、乳腺密度與錯誤位置不是 CXR 指標的專長。";
+      } else if (modality === "ct" && goal === "finding") {
+        ids = ["f1radbert-ct"];
+        reason = "要快速核對 CT 的 18 類發現，F1RadBERT-CT 最直接。";
+      } else if (modality === "ct" && ["factual", "overall", "graph"].includes(goal)) {
+        ids = ["radfact-ct", "f1radbert-ct"];
+        reason = "RadFact-CT 查原子事實的 precision / recall；RadBERT-CT 補一個便宜的標籤基線。";
+      } else if (goal === "baseline") {
+        ids = ["bleu", "rouge"];
+        reason = "兩者幾乎免費，適合 sanity check；仍需再配一個臨床指標。";
+      } else if (goal === "semantic") {
+        ids = ["radeval-bertscore", "bertscore"];
+        reason = "先用放射領域版抓語意，再保留通用 BERTScore 方便比較；兩者都不能單獨防否定翻轉。";
+      } else if (goal === "finding") {
+        ids = modality === "cxr" ? ["f1chexbert", "ratescore"] : ["f1chexbert", "f1radbert-ct"];
+        reason = "標籤分類器速度快；RaTEScore 則對實體同義詞較寬容。";
+      } else if (goal === "graph") {
+        ids = ["radgraph", "ratescore", "radgraph-radcliq"];
+        reason = "RadGraph 看實體與關係，RaTE 補同義詞；只有重現 RadCliQ-v1 才選 RadGraph–RadCliQ。";
+      } else if (goal === "temporal") {
+        ids = ["temporal"];
+        reason = "Temporal F1 就是專門盯 new / stable / worsening 等時間狀態。";
+      } else if (goal === "factual") {
+        ids = modality === "cxr" ? ["radgraph", "crimson"] : ["radfact-ct"];
+        reason = modality === "cxr" ? "CXR 可用 RadGraph 查結構，再用 CRIMSON 衡量錯誤的臨床嚴重度。" : "CT factuality 優先使用 RadFact-CT 的雙向 entailment。";
+      } else {
+        ids = ["crimson", "green", "radcliq"];
+        reason = "CRIMSON 對臨床嚴重度敏感；GREEN 適合離線總評；RadCliQ 是較便宜的 learned composite。";
+      }
+      recommendedIds = new Set(ids);
+      const names = ids.map((id) => metrics.find((metric) => metric.id === id).name).join(" ＋ ");
+      document.getElementById("recommendation").innerHTML = `<strong>優先打開：${names}</strong><span class="mini">${reason}</span>`;
+      applyFilters();
+    }
+
+    function buildPrintTable() {
+      document.getElementById("printTable").innerHTML = `
+        <thead><tr><th>房間</th><th>指標</th><th>一句記憶</th><th>模態／方向</th></tr></thead>
+        <tbody>${metrics.map((m) => `<tr><td>${categoryNames[m.category]}</td><td><b>${m.name}</b><br><small>"${m.key}"</small></td><td>${m.memory}</td><td>${m.modality}<br><small>${m.direction}</small></td></tr>`).join("")}</tbody>`;
+    }
+
+    document.querySelectorAll(".filter").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        document.querySelectorAll(".filter").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+        applyFilters();
+      });
+    });
+    search.addEventListener("input", applyFilters);
+    document.getElementById("modality").addEventListener("change", updateRecommendation);
+    document.getElementById("goal").addEventListener("change", updateRecommendation);
+    document.getElementById("dialogClose").addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    updateFilterCounts();
+    renderCards();
+    updateRecommendation();
+    buildPrintTable();
+  </script>
+</body>
+</html>

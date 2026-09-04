@@ -60,3 +60,19 @@
 .shared-comparisons > summary { color: var(--cyan); cursor: pointer; font-weight: 750; }
 .shared-comparisons > summary:focus-visible, .copy-code:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
 .runtime-sources a { overflow-wrap: anywhere; }
+.pitfall-panel { margin-top: 24px; padding: 18px; border: 1px solid var(--line); border-radius: 17px; background: rgba(255,204,102,.035); }
+.pitfall-card { margin: 12px 0; padding: 14px; border: 1px solid var(--line); border-radius: 13px; background: #091722; }
+.pitfall-card > summary { padding: 2px; color: var(--amber); font-weight: 800; cursor: pointer; line-height: 1.5; }
+.pitfall-card summary:focus-visible, .boundary-primer > summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+.pitfall-evidence { margin-top: 12px; color: var(--muted); font-size: .75rem; }
+.pitfall-card dl { display: grid; grid-template-columns: 95px minmax(0,1fr); gap: 12px; margin: 15px 0; }
+.pitfall-card dt { color: var(--cyan); font-size: .8rem; font-weight: 800; }
+.pitfall-card dd { margin: 0; color: #d3e3ea; font-size: .85rem; line-height: 1.65; overflow-wrap: anywhere; }
+.deployment-guide h4 { margin: 18px 0 12px; color: var(--amber); }
+.deployment-guide p { font-size: .85rem; line-height: 1.65; color: #d3e3ea; }
+.boundary-primer > summary { cursor: pointer; font-weight: 800; color: var(--amber); }
+@media (max-width: 700px) {
+  .pitfall-panel { padding: 12px; }
+  .pitfall-card dl { grid-template-columns: 1fr; gap: 7px; }
+  .pitfall-card dd { margin-bottom: 10px; }
+}

@@ -639,6 +639,10 @@
         <aside id="executionPrimer" class="quickstart" aria-label="RadEval 執行前須知"></aside>
         <div id="tokenPrimer"></div>
       </details>
+      <details class="boundary-primer" id="runGuide">
+        <summary>正式跑之前：16 項避坑＋Linux／RTX 5090 檢查</summary>
+        <div id="runPrimer"></div>
+      </details>
       <div class="atlas-tools">
         <div class="filters" aria-label="依房間篩選">
           <button class="filter" type="button" data-filter="all" aria-pressed="true">全部</button>
@@ -707,6 +711,10 @@
           <h3 class="lesson-title" id="boundaryTitle"><span>05</span>反義、標點、a／the 到底算不算？</h3>
           <div id="dialogEdges"></div>
         </section>
+        <section class="pitfall-panel" aria-labelledby="pitfallTitle">
+          <h3 class="lesson-title" id="pitfallTitle"><span>06</span>實戰避坑：怎麼做、怎麼驗收？</h3>
+          <div id="dialogPitfalls"></div>
+        </section>
         <div class="dialog-footer">模型、權重、Prompt、執行範例與精細規則均在本頁，與完整技術版同步維護。卡通建立直覺，下方原始碼連結供進一步查核。</div>
       </div>
     </div>
@@ -721,6 +729,7 @@
 
   <script src="assets/metric-details.js"></script>
   <script src="assets/edge-cases.js"></script>
+  <script src="assets/operational-pitfalls.js"></script>
   <script>
     const commit = "d412dc2da7df92f72d0b7128aee57b0237ec1b9a";
     const sourceRoot = `https://github.com/jbdel/RadEval/blob/${commit}/`;
@@ -836,7 +845,7 @@
       { id:"ratescore", name:"RaTEScore", room:"clinical", character:"🧑‍🤝‍🧑", memory:"先找醫療實體，再替每個實體找最佳搭檔", question:"兩份報告中的醫療實體，經過同義詞與否定權重後是否相近？", oneLine:"它先做 NER，再用 BioLORD embedding 替實體找最佳配對。", ref:"Cardiomegaly is present.", cand:"The heart is enlarged.", verdict:"cardiomegaly 與 enlarged heart 可被配成一對；真正分數還會乘上 entity type affinity 與否定權重。", steps:["抽出醫療實體與類型", "用 embedding 找最佳對手", "雙向算分後做 harmonic mean"], can:"能容忍醫療實體的同義改寫。", cannot:"任一側完全抽不到實體時，實作特判為 0.5，解讀要小心。", formula:"RaTE=2×S(R,H)×S(H,R)/(S(R,H)+S(H,R))", formulaNote:"S 還包含 entity type affinity、否定權重與 cosine similarity。", source:"radeval/metrics/RaTEScore/scorer.py" },
       { id:"radgraph-radcliq", name:"RadGraph–RadCliQ", room:"specialist", character:"🧩", memory:"兩位裁判：一位看實體，一位看關係", question:"為了 RadCliQ-v1，相容舊版 RadGraph 的 entity 與 relation 有多一致？", oneLine:"它刻意使用原始 radgraph 模型，分別算 entity F1 與 relation F1，再取平均。", ref:"Small left pleural effusion.", cand:"Left pleural effusion.", verdict:"若 entity F1=0.80、relation F1=0.60，教學示意 pair score=(0.80+0.60)/2=0.70。", steps:["抽出 entity 集合", "抽出 relation 集合", "兩個 F1 平均成 pair score"], can:"提供 RadCliQ-v1 所需、版本相容的 RadGraph 子分數。", cannot:"不要和使用 RadGraph-XL、輸出三種等級的 F1RadGraph 混用。", formula:"sᵢ=(F1Entity,i+F1Relation,i)/2", formulaNote:"上面的 0.70 是示意數字；真值取決於原始 radgraph 的抽取結果。", source:"radeval/metrics/radgraph_radcliq/radgraph_radcliq.py" },
       { id:"radcliq", name:"RadCliQ-v1", room:"specialist", character:"🥣", memory:"把四位檢查員的分數放進同一台調理機", question:"能不能把字面、語意、結構與疾病 embedding 合成一個較接近人工評分的分數？", oneLine:"RadCliQ-v1 不是新模型直接讀報告，而是混合四個既有子分數。", ref:"Mild cardiomegaly with small effusion.", cand:"Mild cardiomegaly.", verdict:"要先實跑 RadGraph、BERTScore、CheXbert embedding cosine 與 BLEU-2；缺任何一項都不應捏造總分。", steps:["取得四個子分數", "用固定 μ、σ 標準化", "套線性係數後再形成 aggregate"], can:"把互補訊號合成單一總分。", cannot:"per_sample raw 與 aggregate 的方向不同；不能只看名稱猜越高越好。", formula:"z=(x−μ)/σ；aggregate=1/mean(raw dᵢ)", formulaNote:"x=[RadGraph, BERTScore, SEmb, BLEU-2]；BLEU-2 係數在目前模型中幾乎為 0。", source:"radeval/metrics/RadCliQv1/radcliq.py" },
-      { id:"srrbert", name:"SRRBert", room:"specialist", character:"🎛️", memory:"每句打開 finding×status 開關，再合併成整份報告", question:"報告中的 finding 與它的狀態，能否在 163 個標籤上對齊？", oneLine:"SRRBert 先逐句分類，再用 OR 把句子合成報告層級向量。", ref:"No focal consolidation. Stable cardiomegaly.", cand:"Stable cardiomegaly without focal consolidation.", verdict:"兩句雖重排，若 163 個 finding/status 開關一致，報告層級向量也會一致。", steps:["把報告切成句子", "每句產生 163-label 向量", "逐欄 OR 合成報告後計算 F1"], can:"把 finding 與 positive、negative、stable 等狀態一起評估。", cannot:"aggregate 是 support-weighted；不能拿單筆直覺直接推整個資料集。", formula:"yreport,ℓ=ORsentence(ysentence,ℓ)；F1ℓ=2TPℓ/(2TPℓ+FPℓ+FNℓ)", formulaNote:"目前使用 leaves_with_statuses，對應 163 個 finding/status labels。", source:"radeval/metrics/SRRBert/srr_bert.py" },
+      { id:"srrbert", name:"SRRBert", room:"specialist", character:"🎛️", memory:"每句打開 finding×status 開關，再合併成整份報告", question:"報告中的 finding 與它的狀態，能否在 163 個標籤上對齊？", oneLine:"SRRBert 先逐句分類，再用 OR 把句子合成報告層級向量。", ref:"No focal consolidation. Stable cardiomegaly.", cand:"Stable cardiomegaly without focal consolidation.", verdict:"兩句雖重排，若 163 個 finding/status 開關一致，報告層級向量也會一致。", steps:["把報告切成句子", "每句產生 163-label 向量", "逐欄 OR 合成報告後計算 F1"], can:"把 finding 與 positive、negative、stable 等狀態一起評估。", cannot:"aggregate 是 support-weighted；不能拿單筆直覺直接推整個資料集。", formula:"yreport,ℓ=ORsentence(ysentence,ℓ)；F1ℓ=2TPℓ/(2TPℓ+FPℓ+FNℓ)", formulaNote:"目前使用 leaves_with_statuses，對應 163 個 finding/status labels。上式為 aggregate 的逐標籤 F1；per_sample 在標籤聯集上平均逐欄 P/R/F1，二值時約等於交集/聯集，並非標準 sample F1。詳見實戰避坑。", source:"radeval/metrics/SRRBert/srr_bert.py" },
       { id:"temporal", name:"Temporal F1", room:"specialist", character:"🕰️", memory:"只盯著 stable、new、worsening 等時間路標", question:"兩份報告對『現在與以前相比』的描述是否一致？", oneLine:"它把 stable、new、worsening 等時間詞抽成集合，再算集合 F1。", ref:"Stable cardiomegaly.", cand:"New cardiomegaly.", verdict:"Reference={stable}、Candidate={new}，交集為 0，所以 Temporal F1 約為 0。", steps:["用 Stanza 與 regex 找時間詞", "比較兩側時間詞集合", "以 P、R 合成逐筆 F1"], can:"直接抓出疾病沒變、變新或惡化等時間衝突。", cannot:"兩側都沒有時間詞時，程式會特判為 1；這代表『都沒說』，不是時間描述很完整。", formula:"P=(|TH∩TR|+ε)/(|TH|+ε)，R=(|TH∩TR|+ε)/(|TR|+ε)", formulaNote:"ε=10⁻¹⁰；兩側集合皆空時回傳 1。", source:"radeval/metrics/f1temporal/f1temporal.py" },
       { id:"green", name:"GREEN", room:"specialist", character:"🧑‍⚖️", memory:"先列六類重大錯誤，再由程式數錯誤", question:"LLM 能不能像臨床審稿者一樣，列出配對 finding 與六類重大錯誤？", oneLine:"GREEN 不是讓 LLM 隨口猜分數；LLM 先輸出結構化 critique，程式再計數。", ref:"Mild cardiomegaly with left pleural effusion.", cand:"Mild cardiomegaly.", verdict:"cardiomegaly 配對 M=1；left pleural effusion 遺漏 E=1，所以 GREEN=1/(1+1)=0.50。", steps:["LLM 逐類列出錯誤", "解析 matched findings 與六類重大錯誤", "代入 M/(M+E)"], can:"能說明錯誤種類，也能抓位置、嚴重度與遺漏變化。", cannot:"結果受模型、prompt 與輸出解析穩定性影響。", formula:"GREEN=M/(M+Esig)", formulaNote:"若 M=0，GREEN=0；輕微錯誤不進這個主分母。", source:"radeval/metrics/green_score/green.py" },
       { id:"mammo-green", name:"MammoGREEN", room:"specialist", character:"🎀", memory:"乳攝專科裁判，特別看 BI-RADS 與 density", question:"乳攝報告的 finding、描述、位置、BI-RADS 與 density 是否一致？", oneLine:"它沿用 matched findings 加錯誤計數，但把錯誤類別換成乳攝專用。", ref:"Scattered density. Benign calcifications. BI-RADS 2.", cand:"Heterogeneously dense breasts. Suspicious calcifications. BI-RADS 4.", verdict:"calcifications 核心 finding 配對 M=1；描述、BI-RADS、density 各錯 1 次，E=3，所以 score=0.25。", steps:["模型輸出固定 JSON", "數六類乳攝重大錯誤", "以 matched findings 除以 matched+errors"], can:"專門捕捉 BI-RADS、乳房密度與鈣化描述等乳攝問題。", cannot:"不同 provider、model 或 prompt 版本可能改變錯誤計數。", formula:"MammoGREEN=M/(M+E)", formulaNote:"E 是 false、missing、mischaracterization、location、BI-RADS、density 六類錯誤總數。", source:"radeval/metrics/green_score/mammo_green.py" },
@@ -902,6 +911,7 @@
       document.getElementById("dialogSource").href = `${sourceRoot}${metric.source}`;
       document.getElementById("dialogRuntime").innerHTML = renderRuntimeSheet(runtimeNotes[id], sourceRoot);
       document.getElementById("dialogEdges").innerHTML = renderEdgeCases(id, sourceRoot);
+      document.getElementById("dialogPitfalls").innerHTML = renderPitfalls(id, sourceRoot);
       dialog.querySelector("details").open = false;
       dialog.showModal();
       shell.scrollTop = 0;
@@ -915,6 +925,8 @@
     document.getElementById("dialogClose").addEventListener("click", () => dialog.close());
     dialog.addEventListener("click", event => { if (event.target === dialog) dialog.close(); });
     bindRuntimeCopy(dialog);
+    document.getElementById("runPrimer").innerHTML = renderRunChecklist(sourceRoot);
+    bindRuntimeCopy(document.getElementById("runPrimer"));
     document.getElementById("executionPrimer").innerHTML = renderExecutionPrimer();
     document.getElementById("tokenPrimer").innerHTML = renderBoundaryPrimer();
     renderCards();

@@ -624,6 +624,10 @@
         <p class="section-lead">每一項都含圖解、公式、模型／Prompt、執行碼與「反義、標點、功能詞到底怎麼算」的細節。<a href="#tokenPrimer">先看 8 組小差異、大影響的對照 ↓</a></p>
         <aside id="executionPrimer" class="quickstart" aria-label="RadEval 執行前須知"></aside>
         <aside id="tokenPrimer" class="boundary-primer" aria-label="反義詞、標點與功能詞計分對照"></aside>
+        <details class="boundary-primer" id="runGuide">
+          <summary>正式跑之前：16 項避坑＋Linux／RTX 5090 檢查</summary>
+          <div id="runPrimer"></div>
+        </details>
         <div class="toolbar">
           <input id="search" type="search" placeholder="搜尋名稱、用途、輸出 key…" aria-label="搜尋 16 種指標">
           <div class="filters" aria-label="依類別篩選">
@@ -707,7 +711,11 @@
         <h3 class="lesson-title" id="boundaryTitle"><span class="lesson-no">05</span>精細規則：反義、標點、功能詞怎麼算？</h3>
         <div id="dialogEdges"></div>
       </section>
-      <h3 class="lesson-title"><span class="lesson-no">06</span>選型與注意事項</h3>
+      <section class="pitfall-panel" aria-labelledby="pitfallTitle">
+        <h3 class="lesson-title" id="pitfallTitle"><span class="lesson-no">06</span>實戰避坑：怎麼做、怎麼驗收？</h3>
+        <div id="dialogPitfalls"></div>
+      </section>
+      <h3 class="lesson-title"><span class="lesson-no">07</span>選型與注意事項</h3>
       <div class="dialog-grid" id="dialogGrid"></div>
       <div class="dialog-foot"><span id="dialogFoot"></span><a id="dialogSource" href="https://github.com/jbdel/RadEval/blob/d412dc2da7df92f72d0b7128aee57b0237ec1b9a/docs/metrics.md" target="_blank" rel="noreferrer">查看原始文件 ↗</a></div>
     </div>
@@ -721,6 +729,7 @@
 
   <script src="assets/metric-details.js"></script>
   <script src="assets/edge-cases.js"></script>
+  <script src="assets/operational-pitfalls.js"></script>
   <script>
     const tones = {
       lexical: "var(--cyan)", semantic: "var(--violet)",
@@ -1114,7 +1123,7 @@
         ],
         symbols: [["ℓ", "finding + status label"], ["support", "reference 中該標籤正例數"], ["OR", "任一句命中，就把報告層級標籤打開"]],
         calculation: ["同一範例先切成 No focal consolidation 與 Stable cardiomegaly 兩句。", "兩句的 163-label 輸出逐欄 OR，reference／candidate 各形成一個報告向量。", "實際 weighted P/R/F1 需跨資料集用 classification_report 彙總，這裡不填示意真值。"],
-        caveat: "目前 adapter 選 leaves_with_statuses，對應 163 個 finding/status labels。aggregate 是 support-weighted；per_sample 則由報告向量直接算每筆 P/R/F1，兩者不是同一種平均。",
+        caveat: "目前 adapter 選 leaves_with_statuses，對應 163 個 finding/status labels。aggregate 是 support-weighted；per_sample 用 multilabel_prf_per_sample 在標籤聯集上平均逐欄 P/R/F1；二值時約等於交集/聯集，不是標準 sample F1。ref={A,B}／cand={A,C} 會約為 1/3（標準 sample F1 才是 1/2）；詳見實戰避坑與 utils.py。",
         sourcePath: "radeval/metrics/SRRBert/srr_bert.py"
       },
       "temporal": {
@@ -1303,7 +1312,8 @@
       const searchableFields = [
         metric.name, metric.key, metric.metaphor, metric.memory, metric.what,
         metric.outputs, metric.modality, runtime.verdict, runtime.model,
-        runtime.weights, runtime.prompt, runtime.fixed, JSON.stringify(edgeCaseNotes[metric.id])
+        runtime.weights, runtime.prompt, runtime.fixed, JSON.stringify(edgeCaseNotes[metric.id]),
+        JSON.stringify(operationalPitfalls[metric.id])
       ];
       return searchableFields.join(" ").toLowerCase();
     }
@@ -1378,6 +1388,7 @@
       document.getElementById("dialogFormula").innerHTML = renderFormulaSheet(formula);
       document.getElementById("dialogRuntime").innerHTML = renderRuntimeSheet(runtime, sourceRoot);
       document.getElementById("dialogEdges").innerHTML = renderEdgeCases(id, sourceRoot);
+      document.getElementById("dialogPitfalls").innerHTML = renderPitfalls(id, sourceRoot);
       document.getElementById("dialogGrid").innerHTML = `
         <section class="detail-block"><h3>它怎麼看報告</h3><p>${metric.what}</p></section>
         <section class="detail-block"><h3>最擅長抓到</h3><p>${metric.catches}</p></section>
@@ -1452,6 +1463,8 @@
     document.getElementById("dialogClose").addEventListener("click", () => dialog.close());
     dialog.addEventListener("click", event => { if (event.target === dialog) dialog.close(); });
     bindRuntimeCopy(dialog);
+    document.getElementById("runPrimer").innerHTML = renderRunChecklist(sourceRoot);
+    bindRuntimeCopy(document.getElementById("runPrimer"));
     document.getElementById("executionPrimer").innerHTML = renderExecutionPrimer();
 
     document.getElementById("tokenPrimer").innerHTML = renderBoundaryPrimer();

@@ -564,6 +564,7 @@
       .metric-card { transition: none; }
     }
   </style>
+  <link rel="stylesheet" href="assets/metric-details.css">
 </head>
 <body>
   <a class="skip-link" href="#atlas">跳到 16 個指標</a>
@@ -624,7 +625,7 @@
     <section class="section wrap" id="atlas" aria-labelledby="atlasTitle">
       <div class="section-head">
         <h2 id="atlasTitle">16 位檢查員</h2>
-        <p>16 張共用同一套讀法；點進去再看故事、例句與公式。</p>
+        <p>點一張卡就能讀完：卡通、公式、模型、權重、Prompt、程式與計分細節，不必切換版本。</p>
       </div>
       <div class="visual-grammar" aria-label="卡通圖共用圖例">
         <span class="grammar-chip ref">Reference 永遠在左</span>
@@ -633,6 +634,11 @@
         <span class="grammar-chip wrong">× 紅＝寫錯</span>
         <span class="grammar-chip missing">虛線＝漏寫</span>
       </div>
+      <details class="boundary-primer">
+        <summary>直接使用前：模型權重、環境需求與 8 組計分細節</summary>
+        <aside id="executionPrimer" class="quickstart" aria-label="RadEval 執行前須知"></aside>
+        <div id="tokenPrimer"></div>
+      </details>
       <div class="atlas-tools">
         <div class="filters" aria-label="依房間篩選">
           <button class="filter" type="button" data-filter="all" aria-pressed="true">全部</button>
@@ -692,18 +698,29 @@
             <a class="source-link" id="dialogSource" target="_blank" rel="noreferrer">查看固定版本原始碼 ↗</a>
           </div>
         </details>
-        <div class="dialog-footer">想知道反義詞、標點、a／the 是否計分？請看 <a href="technical.html#tokenPrimer">8 組細節對照</a>；每個指標的 <a href="technical.html">完整技術版</a> 另有模型、Prompt 與專屬邊界規則。</div>
+        <section class="implementation-kit" aria-labelledby="implementationTitle">
+          <h3 class="lesson-title" id="implementationTitle"><span>04</span>直接使用：模型、權重與 Prompt</h3>
+          <p class="boundary-status">與完整技術版共用相同資料。以下程式須在自己的 Python 環境執行；此教材不會呼叫模型或傳送報告。</p>
+          <div id="dialogRuntime"></div>
+        </section>
+        <section class="boundary-panel" aria-labelledby="boundaryTitle">
+          <h3 class="lesson-title" id="boundaryTitle"><span>05</span>反義、標點、a／the 到底算不算？</h3>
+          <div id="dialogEdges"></div>
+        </section>
+        <div class="dialog-footer">模型、權重、Prompt、執行範例與精細規則均在本頁，與完整技術版同步維護。卡通建立直覺，下方原始碼連結供進一步查核。</div>
       </div>
     </div>
   </dialog>
 
   <footer>
     <div class="wrap">
-      <p>卡通故事版負責建立直覺；技術版負責精確查核。兩版公式與範例以 RadEval commit d412dc2 為基準。</p>
+      <p>兩版都能查模型、權重、Prompt、執行程式與計分細節，不必來回切換。共用技術資料以 RadEval commit d412dc2 為基準。</p>
       <div class="footer-links"><a href="technical.html">完整技術版</a><a href="https://github.com/jbdel/RadEval/tree/d412dc2da7df92f72d0b7128aee57b0237ec1b9a" target="_blank" rel="noreferrer">RadEval 固定版本</a></div>
     </div>
   </footer>
 
+  <script src="assets/metric-details.js"></script>
+  <script src="assets/edge-cases.js"></script>
   <script>
     const commit = "d412dc2da7df92f72d0b7128aee57b0237ec1b9a";
     const sourceRoot = `https://github.com/jbdel/RadEval/blob/${commit}/`;
@@ -883,6 +900,8 @@
       document.getElementById("dialogFormula").textContent = metric.formula;
       document.getElementById("dialogFormulaNote").textContent = metric.formulaNote;
       document.getElementById("dialogSource").href = `${sourceRoot}${metric.source}`;
+      document.getElementById("dialogRuntime").innerHTML = renderRuntimeSheet(runtimeNotes[id], sourceRoot);
+      document.getElementById("dialogEdges").innerHTML = renderEdgeCases(id, sourceRoot);
       dialog.querySelector("details").open = false;
       dialog.showModal();
       shell.scrollTop = 0;
@@ -895,6 +914,9 @@
     }));
     document.getElementById("dialogClose").addEventListener("click", () => dialog.close());
     dialog.addEventListener("click", event => { if (event.target === dialog) dialog.close(); });
+    bindRuntimeCopy(dialog);
+    document.getElementById("executionPrimer").innerHTML = renderExecutionPrimer();
+    document.getElementById("tokenPrimer").innerHTML = renderBoundaryPrimer();
     renderCards();
   </script>
 </body>

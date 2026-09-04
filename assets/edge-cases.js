@@ -248,5 +248,6 @@ function renderEdgeCases(id, sourceRoot) {
   return `<p class="boundary-status">規則與設定：固定原始碼核對。模型對新句子的實際輸出：未實跑，不承諾固定扣幾分。</p>
     <dl class="boundary-rules">${note.rows.map(([label, text]) => `<dt>${edgeEscape(label)}</dt><dd>${edgeEscape(text)}</dd>`).join("")}</dl>
     <div class="implementation-note"><strong>記住這個例外：</strong>${edgeEscape(note.example)}</div>
+    <details class="shared-comparisons"><summary>就地對照 8 組例句：反義、否定、標點、a／the、大小寫、重複與詞序</summary>${renderBoundaryPrimer()}</details>
     <div class="runtime-sources">${note.sources.map((path, i) => `<a target="_blank" rel="noreferrer" href="${path.startsWith("https:") ? path : sourceRoot + path}">${path.startsWith("https:") ? "上游 tokenizer（最新版）" : `依據 ${i + 1}：${path.split("/").pop()}`} ↗</a>`).join("")}</div>`;
 }

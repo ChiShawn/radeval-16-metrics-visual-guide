@@ -318,7 +318,7 @@
     .close { width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.04); cursor: pointer; font-size: 1.2rem; }
     .dialog-hero { margin: 20px 0; padding: 18px; border-radius: 16px; background: rgba(80,230,255,.06); background: linear-gradient(120deg, color-mix(in srgb, var(--dialog-tone) 13%, transparent), rgba(255,255,255,.025)); border: 1px solid rgba(80,230,255,.2); border-color: color-mix(in srgb, var(--dialog-tone) 24%, transparent); }
     .dialog-hero .big-memory { color: var(--dialog-tone); font-size: clamp(1.08rem, 3vw, 1.35rem); font-weight: 850; }
-    .principle-panel, .worked-example, .formula-sheet, .implementation-kit {
+    .principle-panel, .worked-example, .formula-sheet, .implementation-kit, .boundary-panel {
       margin: 18px 0;
       padding: 18px;
       border: 1px solid var(--line);
@@ -450,6 +450,22 @@
     .runtime-sources a { padding: 5px 8px; border: 1px solid var(--line); border-radius: 8px; font-size: .72rem; }
     .tag.llm { color: var(--amber); border: 1px solid rgba(255,204,102,.2); }
     .tag.non-llm { color: var(--lime); border: 1px solid rgba(185,244,90,.17); }
+    .boundary-primer { margin: 18px 0 24px; padding: 18px; border: 1px solid var(--line); border-radius: 17px; background: rgba(182,156,255,.04); scroll-margin-top: 100px; }
+    .boundary-primer h3 { margin: 0 0 10px; color: var(--violet); }
+    .boundary-primer p, .boundary-case p { color: #d3e3ea; font-size: .84rem; line-height: 1.6; }
+    .boundary-case { margin-top: 9px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: rgba(0,0,0,.15); }
+    .boundary-case summary { color: var(--cyan); font-weight: 750; cursor: pointer; }
+    .boundary-case summary:focus-visible, .prompt-details summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+    .boundary-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .boundary-pair div { min-width: 0; padding: 12px; background: #07131c; border-radius: 10px; }
+    .boundary-pair small { display: block; color: var(--muted); margin-bottom: 5px; }
+    .boundary-pair code { white-space: pre-wrap; overflow-wrap: anywhere; color: #e9fbff; }
+    .boundary-case .boundary-tokens { color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
+    .boundary-case .boundary-result { border-left: 3px solid var(--amber); padding-left: 12px; color: var(--amber); }
+    .boundary-status { color: var(--muted); font-size: .78rem; line-height: 1.6; }
+    .boundary-rules { display: grid; grid-template-columns: 120px 1fr; gap: 12px; margin: 16px 0; }
+    .boundary-rules dt { color: var(--cyan); font-size: .8rem; font-weight: 800; }
+    .boundary-rules dd { margin: 0; color: #d3e3ea; font-size: .85rem; line-height: 1.6; overflow-wrap: anywhere; }
     .dialog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .detail-block { padding: 16px; border-radius: 15px; background: rgba(255,255,255,.035); border: 1px solid var(--line); }
     .detail-block h3 { margin: 0 0 8px; font-size: .87rem; color: var(--cyan); }
@@ -479,6 +495,8 @@
     @media (max-width: 700px) {
       .wrap { width: min(100% - 24px, 1180px); }
       .quickstart, .runtime-grid { grid-template-columns: 1fr; }
+      .boundary-pair, .boundary-rules { grid-template-columns: 1fr; }
+      .boundary-rules dd { margin-bottom: 10px; }
       .topbar-inner { align-items: flex-start; flex-direction: column; gap: 3px; padding: 8px 0; }
       .topnav { width: 100%; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; }
       .topnav a { flex: 0 0 auto; padding: 5px 8px; font-size: .78rem; }
@@ -546,7 +564,7 @@
             <a class="button" href="index.html">零基礎卡通版 V2</a>
             <button class="button" type="button" onclick="window.print()">列印速查表</button>
           </div>
-          <p class="source-note">依 RadEval 原始碼 d412dc2 固定快照核對｜資料核對日期：2026-08-27</p>
+          <p class="source-note">依 RadEval 原始碼 d412dc2 固定快照核對｜邊界規則核對：2026-09-04</p>
         </div>
         <div class="scanner" aria-label="由外而內的四層評估：字面、語意、臨床、專科">
           <span class="depth-ring one"><span>01 字面</span></span>
@@ -655,7 +673,7 @@
       <div class="wrap">
         <div class="section-kicker">Interactive metric atlas</div>
         <h2>16 指標圖鑑</h2>
-        <p class="section-lead">搜尋、篩選，或直接點卡片看完整教材。每一項都含圖解、範例、公式、是否為 LLM、精確 checkpoint、Prompt、固定參數與可複製執行碼。</p>
+        <p class="section-lead">每一項都含圖解、公式、模型／Prompt、執行碼與「反義、標點、功能詞到底怎麼算」的細節。<a href="#tokenPrimer">先看 8 組小差異、大影響的對照 ↓</a></p>
         <aside class="quickstart" aria-label="RadEval 執行前須知">
           <div>
             <h3>先分清楚兩種「權重」</h3>
@@ -666,6 +684,7 @@
             <div class="install-line"><code>pip install "radeval[api]"</code> <small>（LLM API 指標）</small></div>
           </div>
         </aside>
+        <aside id="tokenPrimer" class="boundary-primer" aria-label="反義詞、標點與功能詞計分對照"></aside>
         <div class="toolbar">
           <input id="search" type="search" placeholder="搜尋名稱、用途、輸出 key…" aria-label="搜尋 16 種指標">
           <div class="filters" aria-label="依類別篩選">
@@ -745,7 +764,11 @@
         <h3 class="lesson-title" id="implementationTitle"><span class="lesson-no">04</span>直接使用：模型、權重與 Prompt</h3>
         <div id="dialogRuntime"></div>
       </section>
-      <h3 class="lesson-title"><span class="lesson-no">05</span>選型與注意事項</h3>
+      <section class="boundary-panel" aria-labelledby="boundaryTitle">
+        <h3 class="lesson-title" id="boundaryTitle"><span class="lesson-no">05</span>精細規則：反義、標點、功能詞怎麼算？</h3>
+        <div id="dialogEdges"></div>
+      </section>
+      <h3 class="lesson-title"><span class="lesson-no">06</span>選型與注意事項</h3>
       <div class="dialog-grid" id="dialogGrid"></div>
       <div class="dialog-foot"><span id="dialogFoot"></span><a id="dialogSource" href="https://github.com/jbdel/RadEval/blob/d412dc2da7df92f72d0b7128aee57b0237ec1b9a/docs/metrics.md" target="_blank" rel="noreferrer">查看原始文件 ↗</a></div>
     </div>
@@ -757,6 +780,7 @@
     <table id="printTable"></table>
   </section>
 
+  <script src="assets/edge-cases.js"></script>
   <script>
     const tones = {
       lexical: "var(--cyan)", semantic: "var(--violet)",
@@ -932,14 +956,14 @@
     const explainers = {
       "bleu": {
         steps: ["切成 1～4 個詞的 n-gram", "計算候選片段有多少也出現在參考報告", "乘上長度懲罰，避免只寫很短"],
-        ref: "Mild cardiomegaly with small effusion.",
-        cand: "Mild cardiomegaly.",
+        ref: "mild cardiomegaly with small effusion",
+        cand: "mild cardiomegaly",
         result: "候選找回前兩個詞，卻短到無法形成 4-gram；BLEU-1 仍有分數，RadEval 預設的 BLEU-4 則接近 0。"
       },
       "rouge": {
         steps: ["把參考報告拆成詞、詞對與最長共同序列", "檢查候選找回多少參考內容", "分別輸出 ROUGE-1、2、L"],
-        ref: "Mild cardiomegaly with small effusion.",
-        cand: "Mild cardiomegaly.",
+        ref: "mild cardiomegaly with small effusion",
+        cand: "mild cardiomegaly",
         result: "「cardiomegaly」被找回，但「effusion」遺漏；P=1.00、R=0.40，最後 F1=0.571。"
       },
       "bertscore": {
@@ -1040,7 +1064,7 @@
         ],
         symbols: [["H / R", "candidate／reference"], ["g", "某個 n-gram"], ["c / r", "候選與最近參考的 token 數"], ["N", "RadEval 預設 4"]],
         calculation: ["同一範例：R 有 5 詞，H 是前 2 詞；unigram 命中 2/2，所以 p₁ = 1。", "c = 2、r = 5，因此 BP = exp(1 − 5/2) = exp(−1.5) ≈ 0.223。", "BLEU-1 約為 0.223；RadEval 預設 BLEU-4 因 H 無法形成 3-gram／4-gram而接近 0。"],
-        caveat: "RadEval 使用 COCO-style BleuScorer、closest reference length，並以 tiny/small 常數避免除以 0；因此數學上的 0 在程式中可能是極小正數，顯示時才看起來像 0。",
+        caveat: "RadEval 只用 str.split() 切詞，不去標點或轉小寫。本例直接輸入小寫、無句點字串，不代表套件自動清洗。使用 closest reference length 與 tiny/small 常數；因此零命中時可能有極小正數。",
         sourcePath: "radeval/metrics/bleu/bleu_scorer.py"
       },
       "rouge": {
@@ -1083,13 +1107,13 @@
           ["加權平均", "F1<sub>w</sub> = Σ<sub>ℓ</sub> support<sub>ℓ</sub>·F1<sub>ℓ</sub> / Σ<sub>ℓ</sub> support<sub>ℓ</sub>"]
         ],
         symbols: [["ℓ", "CheXbert condition label"], ["TP/FP/FN", "跨報告、跨標籤的正確／多報／漏報"], ["support", "該標籤在 reference 中的正例數"]],
-        calculation: ["同一範例：兩句若都被 CheXbert 判為 Cardiomegaly=positive、Edema=negative，其餘 12 類狀態也一致。", "此時該筆 f1chexbert_sample_acc_all=1；任一狀態不同則為 0。", "micro／macro／weighted F1 是跨資料集彙總後計算，不能從單一 pair 推成可靠真值。"],
-        caveat: "RadEval 同時回傳 5-condition 與 all-condition 的 micro、macro、weighted F1。per_sample 模式改回傳『整組標籤完全一致』的 sample accuracy，key 也不同。",
+        calculation: ["同一範例：先由模型分類，再以 rrg 模式將 class 1／3 合併成 1，其餘成 0。", "若 14 個二值標籤全相同，sample_acc_all=1；若只差 1 格，則為 13/14≈0.929，不是 0。", "micro／macro／weighted F1 另以分類報告彙總，並不等於逐筆相同標籤比例。"],
+        caveat: "adapter 取 BaseCheXbertEvaluator.forward 最後兩個逐欄 mean 值。per_sample 回傳 5／14 欄的相同標籤比例，不是 exact-match。positive 與 uncertain 合併、negative 與未提及合併，因此也不是原始四態的完整比較。",
         sourcePath: "radeval/metrics/f1chexbert/adapter.py"
       },
       "f1radbert-ct": {
         equations: [
-          ["二值化", "ŷ<sub>iℓ</sub> = 1[p<sub>iℓ</sub> ≥ 0.5]"],
+          ["二值化", "ŷ<sub>iℓ</sub> = 1[p<sub>iℓ</sub> &gt; 0.5]"],
           ["F1", "F1 = 2TP / (2TP + FP + FN)"],
           ["逐筆準確", "acc<sub>i</sub> = 1[ŷ<sub>i,: </sub> = y<sub>i,: </sub>]（全部標籤都相同才得 1）"]
         ],
@@ -1219,8 +1243,8 @@
         prompt: "不適用：不呼叫生成模型，因此沒有 system prompt、user prompt 或解碼參數。",
         fixed: "CPU；預設 BLEU-4。detailed=True 另算 BLEU-1/2/3。adapter 沒有暴露 n 供 RadEval(metrics={...}) 改寫。",
         install: "pip install radeval",
-        sampleRef: "Mild cardiomegaly with small effusion.",
-        sampleHyp: "Mild cardiomegaly.",
+        sampleRef: "mild cardiomegaly with small effusion",
+        sampleHyp: "mild cardiomegaly",
         metricConfig: "[\"bleu\"]",
         sources: [["adapter", "radeval/metrics/bleu/adapter.py"], ["計分器", "radeval/metrics/bleu/bleu_scorer.py"]]
       },
@@ -1232,8 +1256,8 @@
         prompt: "不適用：沒有 prompt，也不會連網推論。",
         fixed: "CPU；對每一筆取 ROUGE F1，再做算術平均。它不是頁面文字常說的純 recall。",
         install: "pip install radeval",
-        sampleRef: "Mild cardiomegaly with small effusion.",
-        sampleHyp: "Mild cardiomegaly.",
+        sampleRef: "mild cardiomegaly with small effusion",
+        sampleHyp: "mild cardiomegaly",
         metricConfig: "[\"rouge\"]",
         sources: [["adapter", "radeval/metrics/rouge/adapter.py"]]
       },
@@ -1241,7 +1265,7 @@
         llm: false,
         verdict: "非 LLM｜通用 Transformer encoder",
         model: "Hugging Face checkpoint：distilbert-base-uncased；取第 5 層 contextual token embeddings。它只編碼，不生成文字。",
-        weights: "首次執行由 Transformers 下載 DistilBERT 權重與 BERTScore baseline。固定 rescale_with_baseline=True、idf=False、batch_size=64、nthreads=4。",
+        weights: "首次執行由 Transformers 下載 DistilBERT 權重；BERTScore baseline TSV 隨套件內附。固定 rescale_with_baseline=True、idf=False、batch_size=64、nthreads=4。",
         prompt: "不適用：輸入直接 tokenize 成 token embeddings，沒有 chat template 或自然語言提示詞。",
         fixed: "模型與層數由 adapter 寫死；RadEval 公開介面目前不接受 model_type／num_layers 覆寫。裝置由 BERTScore scorer 自動選擇。",
         install: "pip install radeval",
@@ -1537,7 +1561,7 @@
         <div class="viz-formula">放射領域 embedding → token 最佳對齊 → P / R / F1</div>`,
       "f1chexbert": () => `
         <div class="label-comparison"><div class="label-row-name">Reference</div><div class="label-grid">${labelCells(chexbertLabels, (label) => label === "Cardiomegaly" ? "on" : label === "Edema" ? "negative" : "")}</div><div class="label-row-name">Candidate</div><div class="label-grid">${labelCells(chexbertLabels, (label) => label === "Cardiomegaly" ? "on" : label === "Edema" ? "negative" : "")}</div></div>
-        <div class="viz-caption">+ = positive　− = explicitly negative　∅ = not mentioned；兩列逐欄比較後才計算 F1／sample accuracy</div>`,
+        <div class="viz-caption">圖示呈現報告狀態：+ 陽性、− 陰性、∅ 未提及。實際計分前 positive／uncertain → 1，negative／未提及 → 0；sample accuracy 是相同二值標籤比例。</div>`,
       "f1radbert-ct": () => `
         <div class="label-grid">${labelCells(radbertCtLabels, (label) => ["Atelectasis", "Pleural effusion"].includes(label) ? "on" : label === "No finding" ? "derived" : "")}</div>
         <div class="viz-caption">18 個模型 findings + 1 個衍生 No finding = 19 欄評估矩陣</div>
@@ -1601,7 +1625,7 @@
       const searchableFields = [
         metric.name, metric.key, metric.metaphor, metric.memory, metric.what,
         metric.outputs, metric.modality, runtime.verdict, runtime.model,
-        runtime.weights, runtime.prompt, runtime.fixed
+        runtime.weights, runtime.prompt, runtime.fixed, JSON.stringify(edgeCaseNotes[metric.id])
       ];
       return searchableFields.join(" ").toLowerCase();
     }
@@ -1675,6 +1699,7 @@
       document.getElementById("exampleResult").textContent = explainer.result;
       document.getElementById("dialogFormula").innerHTML = renderFormulaSheet(formula);
       document.getElementById("dialogRuntime").innerHTML = renderRuntimeSheet(runtime);
+      document.getElementById("dialogEdges").innerHTML = renderEdgeCases(id, sourceRoot);
       document.getElementById("dialogGrid").innerHTML = `
         <section class="detail-block"><h3>它怎麼看報告</h3><p>${metric.what}</p></section>
         <section class="detail-block"><h3>最擅長抓到</h3><p>${metric.catches}</p></section>
@@ -1765,6 +1790,7 @@
       }
     });
 
+    document.getElementById("tokenPrimer").innerHTML = renderBoundaryPrimer();
     updateFilterCounts();
     renderCards();
     updateRecommendation();

@@ -71,8 +71,104 @@
 .deployment-guide h4 { margin: 18px 0 12px; color: var(--amber); }
 .deployment-guide p { font-size: .85rem; line-height: 1.65; color: #d3e3ea; }
 .boundary-primer > summary { cursor: pointer; font-weight: 800; color: var(--amber); }
+
+.radeval-method-map {
+  margin: 18px 0 24px;
+  padding: 18px;
+  border: 1px solid rgba(80,230,255,.26);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(80,230,255,.075), rgba(182,156,255,.035));
+}
+.method-map-intro .eyebrow, .method-passport-head small,
+.card-method > small, .method-identifiers small {
+  color: var(--cyan);
+  font: 800 .7rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .08em;
+}
+.method-map-intro h3 { margin: 5px 0 8px; color: #f2fbff; font-size: 1.16rem; }
+.method-map-intro p { margin: 0; color: #d3e3ea; font-size: .86rem; line-height: 1.65; }
+.orchestrator-flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+  margin: 16px 0;
+  padding: 0;
+  list-style: none;
+}
+.orchestrator-flow li, .method-flow li {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(0,0,0,.18);
+}
+.orchestrator-flow li > span, .method-flow li > span {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 8px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--cyan);
+  color: #06151a;
+  font-weight: 900;
+}
+.orchestrator-flow strong { display: block; color: #f2fbff; font-size: .84rem; }
+.orchestrator-flow small { display: block; margin-top: 5px; color: var(--muted); line-height: 1.45; }
+.orchestrator-modes {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 7px 12px;
+  margin-bottom: 12px;
+  color: #d3e3ea;
+  font-size: .8rem;
+}
+.orchestrator-modes code, .method-identifiers code, .method-output code {
+  color: #e9fbff;
+  font: 700 .76rem/1.45 ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+.method-source { color: var(--cyan); font-size: .76rem; font-weight: 800; overflow-wrap: anywhere; }
+.method-passport {
+  margin: 16px 0 24px;
+  padding: 17px;
+  border: 1px solid rgba(80,230,255,.24);
+  border-radius: 17px;
+  background: rgba(80,230,255,.045);
+}
+.method-passport-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.method-passport-head h3 { margin: 4px 0 7px; color: #f3fbff; font-size: 1.05rem; }
+.method-passport-head p { margin: 0; color: #d3e3ea; font-size: .84rem; line-height: 1.6; }
+.method-kind {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border: 1px solid rgba(185,244,90,.24);
+  border-radius: 999px;
+  color: var(--lime);
+  font-size: .7rem;
+  font-weight: 800;
+}
+.method-identifiers { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 14px 0 10px; }
+.method-identifiers div { padding: 10px 11px; border: 1px solid var(--line); border-radius: 10px; background: #07131c; }
+.method-identifiers small { display: block; margin-bottom: 4px; }
+.method-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin: 10px 0; padding: 0; list-style: none; }
+.method-flow li { color: #d3e3ea; font-size: .8rem; line-height: 1.5; }
+.method-model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.method-model-grid section { min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: rgba(0,0,0,.16); }
+.method-model-grid h4 { margin: 0 0 7px; color: var(--amber); font-size: .78rem; }
+.method-model-grid ul { margin: 0; padding-left: 18px; }
+.method-model-grid li, .method-model-grid p { margin: 3px 0; color: #d3e3ea; font-size: .78rem; line-height: 1.55; overflow-wrap: anywhere; }
+.method-output { margin: 10px 0; padding: 10px 11px; border-left: 3px solid var(--lime); background: rgba(185,244,90,.045); color: #d3e3ea; font-size: .78rem; }
+.card-method { display: grid; gap: 4px; margin: 12px 0; padding: 10px; border: 1px solid var(--line); border-radius: 11px; background: rgba(0,0,0,.16); text-align: left; }
+.card-method > strong { color: #f1fbff; font-size: .82rem; line-height: 1.35; }
+.card-method > small:nth-of-type(2) { margin-top: 5px; color: var(--lime); }
+.card-method > span { color: #c7d8df; font-size: .73rem; line-height: 1.45; overflow-wrap: anywhere; }
 @media (max-width: 700px) {
-  .pitfall-panel { padding: 12px; }
+  .pitfall-panel, .radeval-method-map, .method-passport { padding: 12px; }
   .pitfall-card dl { grid-template-columns: 1fr; gap: 7px; }
   .pitfall-card dd { margin-bottom: 10px; }
+  .orchestrator-flow, .method-flow, .method-model-grid, .method-identifiers { grid-template-columns: 1fr; }
+  .method-passport-head { display: grid; }
+  .method-kind { justify-self: start; }
+  .orchestrator-modes { grid-template-columns: 1fr; }
 }

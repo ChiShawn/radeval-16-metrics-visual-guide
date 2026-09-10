@@ -543,7 +543,7 @@
             <div class="room-icon">🧠</div>
             <h3>語意共振室</h3>
             <p>用向量找「意思像不像」。仍可能看漏否定詞。</p>
-            <div class="room-list"><span>BERTScore</span><span>RadEval BERTScore</span></div>
+            <div class="room-list"><span>BERTScore</span><span>RadEval-BERTScore</span></div>
           </article>
           <article class="memory-room" data-no="3">
             <div class="room-icon">🩺</div>
@@ -624,6 +624,7 @@
         <p class="section-lead">每一項都含圖解、公式、模型／Prompt、執行碼與「反義、標點、功能詞到底怎麼算」的細節。<a href="#tokenPrimer">先看 8 組小差異、大影響的對照 ↓</a></p>
         <aside id="executionPrimer" class="quickstart" aria-label="RadEval 執行前須知"></aside>
         <aside id="tokenPrimer" class="boundary-primer" aria-label="反義詞、標點與功能詞計分對照"></aside>
+        <div id="radevalMethodMap"></div>
         <details class="boundary-primer" id="runGuide">
           <summary>正式跑之前：16 項避坑＋Linux／RTX 5090 檢查</summary>
           <div id="runPrimer"></div>
@@ -685,6 +686,7 @@
         <button class="close" type="button" id="dialogClose" aria-label="關閉">×</button>
       </div>
       <div class="dialog-hero"><div class="big-memory" id="dialogMemory"></div><div id="dialogMetaphor"></div></div>
+      <div id="dialogMethod"></div>
       <section class="principle-panel" aria-labelledby="principleTitle">
         <h3 class="lesson-title" id="principleTitle"><span class="lesson-no">01</span>原理圖解</h3>
         <div class="visual-stage" id="dialogVisual"></div>
@@ -728,6 +730,7 @@
   </section>
 
   <script src="assets/metric-details.js"></script>
+  <script src="assets/method-profiles.js"></script>
   <script src="assets/edge-cases.js"></script>
   <script src="assets/operational-pitfalls.js"></script>
   <script>
@@ -771,7 +774,7 @@
         use: "通用語意基線；臨床任務一定搭配否定／實體敏感指標。"
       },
       {
-        id: "radeval-bertscore", name: "RadEval BERTScore", key: "radeval_bertscore", category: "semantic", icon: "🩻",
+        id: "radeval-bertscore", name: "RadEval-BERTScore", key: "radeval_bertscore", category: "semantic", icon: "🩻",
         modality: "不限", engine: "ModernBERT", direction: "↑ 越高越相近", latency: "1.14 ms／筆", vram: "606 MB",
         metaphor: "把 BERTScore 送進放射科受訓，讓它更熟影像報告的語言。",
         memory: "RadEval-BERT = 放射科語意耳", what: "BERTScore 架構，但改用領域調適的 IAMJB/RadEvalModernBERT 放射學 encoder。",
@@ -841,7 +844,7 @@
         use: "CXR 最終評估／final-tune；若把 raw distance 當 RL reward，官方建議以負號安全反轉。"
       },
       {
-        id: "srrbert", name: "SRRBert", key: "srrbert", category: "specialized", icon: "🏗️",
+        id: "srrbert", name: "SRR-BERT", key: "srrbert", category: "specialized", icon: "🏗️",
         modality: "CXR", engine: "163-label classifier", direction: "↑ 越高越一致", latency: "4.97 ms／筆", vram: "420 MB",
         metaphor: "先把報告拆成句子，再送進 163 個抽屜，最後比較整份報告的結構。",
         memory: "SRR = 句子入 163 抽屜", what: "逐句分類為 163 種 finding / status labels，合併到報告層級後算 weighted P/R/F1。",
@@ -1313,7 +1316,7 @@
         metric.name, metric.key, metric.metaphor, metric.memory, metric.what,
         metric.outputs, metric.modality, runtime.verdict, runtime.model,
         runtime.weights, runtime.prompt, runtime.fixed, JSON.stringify(edgeCaseNotes[metric.id]),
-        JSON.stringify(operationalPitfalls[metric.id])
+        JSON.stringify(operationalPitfalls[metric.id]), JSON.stringify(metricMethodProfiles[metric.id])
       ];
       return searchableFields.join(" ").toLowerCase();
     }
@@ -1331,6 +1334,8 @@
     function renderCards() {
       grid.innerHTML = metrics.map((metric) => {
         const runtime = runtimeNotes[metric.id];
+        const profile = metricMethodProfiles[metric.id];
+        const modelType = profile.llms.length ? "LLM" : "MODEL / RULE";
         return `
         <button type="button" class="metric-card" data-id="${metric.id}" data-category="${metric.category}"
           style="--tone:${tones[metric.category]}">
@@ -1338,6 +1343,7 @@
           <span class="card-title">${metric.name}</span>
           <span class="metric-key">"${metric.key}"</span>
           <span class="metaphor">${metric.metaphor}</span>
+          <span class="card-method"><small>METHOD</small><strong>${profile.method}</strong><small>${modelType}</small><span>${methodModelLabel(profile)}</span></span>
           <span class="memory-line">⌁ ${metric.memory}</span>
           <span class="card-meta"><span class="tag">${categoryNames[metric.category]}</span><span class="tag">${metric.modality}</span><span class="tag ${metric.engine.includes("API") ? "api" : ""}">${metric.engine}</span><span class="tag ${runtime.llm ? "llm" : "non-llm"}">${runtime.llm ? "LLM" : "非 LLM"}</span></span>
         </button>`;
@@ -1375,6 +1381,7 @@
       document.getElementById("dialogKey").textContent = `RadEval key: "${metric.key}" · ${categoryNames[metric.category]}指標 · ${metric.modality}`;
       document.getElementById("dialogMemory").textContent = `⌁ ${metric.memory}`;
       document.getElementById("dialogMetaphor").textContent = metric.metaphor;
+      document.getElementById("dialogMethod").innerHTML = renderMethodPassport(id, sourceRoot);
       document.querySelector(".dialog-hero").style.setProperty("--dialog-tone", tones[metric.category]);
       document.querySelector(".principle-panel").style.setProperty("--dialog-tone", tones[metric.category]);
       document.querySelector(".worked-example").style.setProperty("--dialog-tone", tones[metric.category]);
@@ -1468,6 +1475,7 @@
     document.getElementById("executionPrimer").innerHTML = renderExecutionPrimer();
 
     document.getElementById("tokenPrimer").innerHTML = renderBoundaryPrimer();
+    document.getElementById("radevalMethodMap").innerHTML = renderRadEvalMethodMap(sourceRoot);
     updateFilterCounts();
     renderCards();
     updateRecommendation();

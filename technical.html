@@ -731,6 +731,7 @@
 
   <script src="assets/metric-details.js"></script>
   <script src="assets/method-profiles.js"></script>
+  <script src="assets/tokenizer-notes.js"></script>
   <script src="assets/edge-cases.js"></script>
   <script src="assets/operational-pitfalls.js"></script>
   <script>
@@ -1316,7 +1317,8 @@
         metric.name, metric.key, metric.metaphor, metric.memory, metric.what,
         metric.outputs, metric.modality, runtime.verdict, runtime.model,
         runtime.weights, runtime.prompt, runtime.fixed, JSON.stringify(edgeCaseNotes[metric.id]),
-        JSON.stringify(operationalPitfalls[metric.id]), JSON.stringify(metricMethodProfiles[metric.id])
+        JSON.stringify(operationalPitfalls[metric.id]), JSON.stringify(metricMethodProfiles[metric.id]),
+        JSON.stringify(tokenizerNotes[metric.id])
       ];
       return searchableFields.join(" ").toLowerCase();
     }

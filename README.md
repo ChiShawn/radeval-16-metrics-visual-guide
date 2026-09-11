@@ -22,6 +22,7 @@
   Prompt／原始碼、執行範例與精細計分規則，不需切換版本。
 - `assets/metric-details.js`：兩版共用的 16 項實作資料與程式範例
 - `assets/method-profiles.js`：兩版共用的 RadEval Method、adapter、模型／LLM 名稱、流程與輸出 key
+- `assets/tokenizer-notes.js`：16 項 tokenizer 的名稱、角色、流程、例子及裁切／標點等注意事項；直接嵌入每張 Method 說明。
 - `assets/edge-cases.js`：兩版共用的專屬邊界規則及 8 組例句對照
 - `assets/operational-pitfalls.js`：16 項共 66 個實戰避坑條目、
   8 項通用檢查，以及 Linux／RTX 5090 的待執行驗收程式

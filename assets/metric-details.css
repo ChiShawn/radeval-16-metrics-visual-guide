@@ -72,6 +72,12 @@
 .deployment-guide p { font-size: .85rem; line-height: 1.65; color: #d3e3ea; }
 .boundary-primer > summary { cursor: pointer; font-weight: 800; color: var(--amber); }
 
+.tokenizer-lesson { margin: 16px 0; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #091722; }
+.tokenizer-lesson h4 { margin: 0 0 12px; color: var(--cyan); font-size: 1.05rem; }
+.tokenizer-lesson p { color: #d3e3ea; font-size: 1rem; line-height: 1.7; overflow-wrap: anywhere; }
+.tokenizer-lesson .tokenizer-definition { color: var(--muted); font-size: .875rem; }
+.tokenizer-lesson .method-flow li { font-size: .875rem; }
+.tokenizer-example { border-left: 3px solid var(--amber); padding: 10px 12px; background: rgba(255,204,102,.04); }
 .radeval-method-map {
   margin: 18px 0 24px;
   padding: 18px;

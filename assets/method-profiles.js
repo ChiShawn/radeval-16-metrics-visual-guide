@@ -353,6 +353,7 @@ function renderMethodPassport(id, sourceRoot) {
       <section><h4>LLM 名稱</h4>${llmContent}</section>
     </div>
     <div class="method-output"><strong>實際輸出：</strong><code>${methodEscape(profile.outputs)}</code></div>
+    ${renderTokenizerNote(id, sourceRoot)}
     <a class="method-source" href="${sourceRoot}${profile.source}" target="_blank" rel="noreferrer">核對 adapter 原始碼 ↗</a>
   </section>`;
 }

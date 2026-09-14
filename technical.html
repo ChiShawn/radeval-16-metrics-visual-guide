@@ -480,7 +480,7 @@
       .print-sheet small { color: #444; }
     }
   </style>
-  <link rel="stylesheet" href="assets/metric-details.css">
+  <link rel="stylesheet" href="assets/metric-details.css?v=20260914">
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -608,7 +608,7 @@
                 <option value="graph">實體、屬性與關係</option>
                 <option value="temporal">時間變化：new / stable / worsening</option>
                 <option value="overall">整體臨床品質／錯誤嚴重度</option>
-                <option value="factual">原子事實支持度</option>
+                <option value="factual">單一影像發現敘述支持度</option>
               </select>
             </div>
           </div>
@@ -624,6 +624,7 @@
         <p class="section-lead">每一項都含圖解、公式、模型／Prompt、執行碼與「反義、標點、功能詞到底怎麼算」的細節。<a href="#tokenPrimer">先看 8 組小差異、大影響的對照 ↓</a></p>
         <aside id="executionPrimer" class="quickstart" aria-label="RadEval 執行前須知"></aside>
         <aside id="tokenPrimer" class="boundary-primer" aria-label="反義詞、標點與功能詞計分對照"></aside>
+      <p class="guide-version">教材更新版 2026.09.14 · 白話流程、RadFact Prompt 與地端 LLM 接法</p>
         <div id="radevalMethodMap"></div>
         <details class="boundary-primer" id="runGuide">
           <summary>正式跑之前：16 項避坑＋Linux／RTX 5090 檢查</summary>
@@ -662,7 +663,7 @@
         <div class="rules">
           <article class="rule"><strong>① 便宜不等於安全</strong><p>BLEU、ROUGE 適合 sanity check；BERTScore 適合語意基線。但臨床否定、嚴重度、部位仍要靠臨床指標。</p></article>
           <article class="rule"><strong>② 模態先決</strong><p>CXR、CT、Mammo 的詞彙與錯誤類型不同。CheXbert 不該拿來替代 CT 的 RadBERT-CT，也不該替代 MammoGREEN。</p></article>
-          <article class="rule"><strong>③ 不要只報一個數</strong><p>最少保留「字面或語意 + 臨床」兩層。若是高風險研究，再加入 LLM 裁判或原子事實檢查。</p></article>
+          <article class="rule"><strong>③ 不要只報一個數</strong><p>最少保留「字面或語意 + 臨床」兩層。若是高風險研究，再加入 LLM 裁判或單一影像發現敘述檢查。</p></article>
         </div>
       </div>
     </section>
@@ -729,11 +730,12 @@
     <table id="printTable"></table>
   </section>
 
-  <script src="assets/metric-details.js"></script>
-  <script src="assets/method-profiles.js"></script>
-  <script src="assets/tokenizer-notes.js"></script>
-  <script src="assets/edge-cases.js"></script>
-  <script src="assets/operational-pitfalls.js"></script>
+  <script src="assets/metric-details.js?v=20260914"></script>
+  <script src="assets/method-profiles.js?v=20260914"></script>
+  <script src="assets/tokenizer-notes.js?v=20260914"></script>
+  <script src="assets/learning-notes.js?v=20260914"></script>
+  <script src="assets/edge-cases.js?v=20260914"></script>
+  <script src="assets/operational-pitfalls.js?v=20260914"></script>
   <script>
     const tones = {
       lexical: "var(--cyan)", semantic: "var(--violet)",
@@ -800,7 +802,7 @@
         metaphor: "CT 版的 19 欄點名板：18 個模型 findings，再加 1 個衍生 No finding。",
         memory: "RadBERT-CT = 18 findings + No finding", what: "使用 IAMJB/RadBERT-CT 對 18 個 CT-specific findings 分類，再加入衍生的 No finding 欄。",
         catches: "CT 發現層級的標籤一致性。",
-        misses: "自由描述中的細緻關係、時間與原子事實支持度。",
+        misses: "自由描述中的細緻關係、時間與單一影像發現敘述支持度。",
         outputs: "f1radbert_ct_accuracy / micro_f1 / macro_f1 / weighted_f1；per_sample 為 f1radbert_ct_sample_acc",
         use: "CT 報告的快速臨床標籤評估。"
       },
@@ -850,7 +852,7 @@
         metaphor: "先把報告拆成句子，再送進 163 個抽屜，最後比較整份報告的結構。",
         memory: "SRR = 句子入 163 抽屜", what: "逐句分類為 163 種 finding / status labels，合併到報告層級後算 weighted P/R/F1。",
         catches: "結構化報告中的發現與狀態分布。",
-        misses: "開放式細緻推理與原子事實支持；分類器未涵蓋的表達可能被壓縮。",
+        misses: "開放式細緻推理與單一影像發現敘述支持；分類器未涵蓋的表達可能被壓縮。",
         outputs: "srrbert_weighted_f1 / weighted_precision / weighted_recall；detailed 可看各 label",
         use: "需要結構化報告層級評估，但又想維持毫秒級速度時。"
       },
@@ -896,11 +898,11 @@
       },
       {
         id: "radfact-ct", name: "RadFact-CT", key: "radfact_ct", category: "specialized", icon: "🔬",
-        modality: "CT", engine: "OpenAI API", direction: "↑ 越高越可信", latency: "≈ 238 ms／筆 API", vram: "CPU／網路",
-        metaphor: "把報告切成原子句，雙向盤問：你有證據嗎？對方說的你漏了嗎？",
-        memory: "RadFact = 原子事實雙向審問", what: "將 CT 報告拆成 atomic phrases，做雙向 entailment：candidate 是否被 reference 支持，反向是否覆蓋。",
+        modality: "CT", engine: "OpenAI-compatible API", direction: "↑ 越高越可信", latency: "≈ 238 ms／筆 API", vram: "CPU／網路",
+        metaphor: "把報告拆成可逐項核對的小敘述，雙向查證：哪些被支持？哪些漏寫？",
+        memory: "RadFact = 單一影像發現敘述雙向審問", what: "將 CT 報告拆成 atomic phrases，做雙向 entailment：candidate 是否被 reference 支持，反向是否覆蓋。",
         catches: "事實 precision（幻覺）與 recall（遺漏）；可選擇是否過濾陰性／正常 findings。",
-        misses: "依賴 API；原子化與 entailment judge 的行為會受模型版本影響。",
+        misses: "依賴 API 服務（可為相容地端）；拆敘述與支持關係判讀會受模型版本影響。",
         outputs: "radfact_ct_precision / recall / f1；aggregate 為百分比，per_sample 為 0～1 比例",
         use: "CT 報告的 factuality、遺漏與幻覺稽核。"
       }
@@ -998,7 +1000,7 @@
         result: "教學判定：若 pulmonary edema 的 finding 權重 w=0.5，且嚴重度錯誤權重 a=0.5，則正確額度為 0.25，最後 CRIMSON=0.50。"
       },
       "radfact-ct": {
-        steps: ["把兩份 CT 報告各自拆成原子事實", "Candidate → Reference 查支持度，得到 precision", "Reference → Candidate 查覆蓋度，得到 recall，再合成 F1"],
+        steps: ["把兩份 CT 報告各自拆成單一影像發現敘述", "Candidate → Reference 查支持度，得到 precision", "Reference → Candidate 查覆蓋度，得到 recall，再合成 F1"],
         ref: "Acute appendicitis. No abscess.",
         cand: "Acute appendicitis with an abscess.",
         result: "appendicitis 有支持；abscess 是無支持的新增事實，而且與參考否定相反，因此 precision 與 factual F1 都會下降。"
@@ -1424,7 +1426,7 @@
         reason = "要快速核對 CT 的 18 類發現，F1RadBERT-CT 最直接。";
       } else if (modality === "ct" && ["factual", "overall", "graph"].includes(goal)) {
         ids = ["radfact-ct", "f1radbert-ct"];
-        reason = "RadFact-CT 查原子事實的 precision / recall；RadBERT-CT 補一個便宜的標籤基線。";
+        reason = "RadFact-CT 查單一影像發現敘述的 precision / recall；RadBERT-CT 補一個便宜的標籤基線。";
       } else if (goal === "baseline") {
         ids = ["bleu", "rouge"];
         reason = "兩者幾乎免費，適合 sanity check；仍需再配一個臨床指標。";

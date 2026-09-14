@@ -6,6 +6,14 @@
 
 ## 使用方式
 
+教材更新版：**2026.09.14**。維持原 GitHub Pages 網址與 Notion 嵌入網址，
+以 Git commit 記錄修訂；此日期是教材版本，非 RadEval 套件版本。
+
+本次同步：token IDs／embedding／模型／計分的分工、CheXbert 13＋1 heads、
+RadFact「單一影像發現敘述」白話例子、三組公開 Prompt 與 few-shot，
+以及 MammoGREEN／RadFact-CT 的 OpenAI-compatible 地端接法。
+地端內容依原始碼與 SDK 推導，尚未實測使用者的 gpt-oss server。
+
 直接以瀏覽器開啟 `index.html`。這是純前端靜態教材，
 不需要安裝套件或啟動後端服務。
 
@@ -23,6 +31,7 @@
 - `assets/metric-details.js`：兩版共用的 16 項實作資料與程式範例
 - `assets/method-profiles.js`：兩版共用的 RadEval Method、adapter、模型／LLM 名稱、流程與輸出 key
 - `assets/tokenizer-notes.js`：16 項 tokenizer 的名稱、角色、流程、例子及裁切／標點等注意事項；直接嵌入每張 Method 說明。
+- `assets/learning-notes.js`：兩版共用的白話教學、RadFact Prompt 連結與地端 API 設定說明。
 - `assets/edge-cases.js`：兩版共用的專屬邊界規則及 8 組例句對照
 - `assets/operational-pitfalls.js`：16 項共 66 個實戰避坑條目、
   8 項通用檢查，以及 Linux／RTX 5090 的待執行驗收程式

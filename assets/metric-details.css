@@ -72,6 +72,13 @@
 .deployment-guide p { font-size: .85rem; line-height: 1.65; color: #d3e3ea; }
 .boundary-primer > summary { cursor: pointer; font-weight: 800; color: var(--amber); }
 
+.learning-table { overflow-x: auto; }
+.learning-table table { width: 100%; border-collapse: collapse; font-size: .9rem; color: #d3e3ea; }
+.learning-table th, .learning-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.learning-table caption { text-align: left; margin: 10px 0; color: var(--cyan); }
+.local-config { padding: 14px; background: #06121a; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .9rem; }
+.tokenizer-lesson li { color: #d3e3ea; line-height: 1.7; margin-bottom: 8px; }
+.guide-version { color: var(--cyan); font-size: .875rem; margin: 10px 0; }
 .tokenizer-lesson { margin: 16px 0; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #091722; }
 .tokenizer-lesson h4 { margin: 0 0 12px; color: var(--cyan); font-size: 1.05rem; }
 .tokenizer-lesson p { color: #d3e3ea; font-size: 1rem; line-height: 1.7; overflow-wrap: anywhere; }

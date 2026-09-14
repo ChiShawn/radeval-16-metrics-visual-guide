@@ -85,7 +85,7 @@ const metricMethodProfiles = {
     ],
     "llms": [],
     "flow": [
-      "兩側各自預測 14 個四態標籤",
+      "兩側各自預測 13 個四態欄位＋No Finding 二態欄位",
       "positive＋uncertain 合併為 1",
       "計 5 類／14 類 micro、macro、weighted F1"
     ],
@@ -252,9 +252,9 @@ const metricMethodProfiles = {
     "adapter": "MammoGreenMetric",
     "method": "MammoGREEN structured error-count judge",
     "methodDetail": "API LLM 依乳攝專用六類錯誤輸出 JSON，再由程式驗證 schema 並計 M/(M+E)。",
-    "kind": "外部 API LLM judge",
+    "kind": "API LLM judge（雲端／相容地端）",
     "models": [
-      "供應商託管模型｜不下載 checkpoint"
+      "API 呼叫；雲端或自行部署的相容服務"
     ],
     "llms": [
       "OpenAI gpt-4o-mini（RadEval adapter 預設）",
@@ -294,9 +294,9 @@ const metricMethodProfiles = {
     "adapter": "RadFactCTMetric",
     "method": "RadFact-CT bidirectional atomic entailment",
     "methodDetail": "API LLM 先拆 CT atomic phrases，再讓每個 candidate/reference phrase 做雙向 entailment。",
-    "kind": "多階段外部 API LLM judge",
+    "kind": "多階段 API LLM judge（雲端／相容地端）",
     "models": [
-      "OpenAI API｜不下載本地 checkpoint"
+      "OpenAI-compatible API；RadEval 不直接載入地端權重"
     ],
     "llms": [
       "OpenAI gpt-4o-mini（RadEval adapter 預設）"
@@ -353,7 +353,9 @@ function renderMethodPassport(id, sourceRoot) {
       <section><h4>LLM 名稱</h4>${llmContent}</section>
     </div>
     <div class="method-output"><strong>實際輸出：</strong><code>${methodEscape(profile.outputs)}</code></div>
+    ${renderMetricLearning(id, sourceRoot)}
     ${renderTokenizerNote(id, sourceRoot)}
+    ${renderLocalJudgeGuide(id, sourceRoot)}
     <a class="method-source" href="${sourceRoot}${profile.source}" target="_blank" rel="noreferrer">核對 adapter 原始碼 ↗</a>
   </section>`;
 }
@@ -369,5 +371,6 @@ function renderRadEvalMethodMap(sourceRoot) {
     </ol>
     <div class="orchestrator-modes"><code>per_sample=False</code><span>aggregate</span><code>per_sample=True</code><span>逐筆列表；通常優先於 detailed</span><code>detailed=True</code><span>部分指標增加 breakdown</span></div>
     <a class="method-source" href="${sourceRoot}radeval/radeval.py" target="_blank" rel="noreferrer">核對 RadEval orchestrator 原始碼 ↗</a>
+    ${renderLearningOverview()}
   </section>`;
 }

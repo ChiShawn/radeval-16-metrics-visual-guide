@@ -121,7 +121,7 @@ const tokenizerNotes = {
     source: "radeval/metrics/crimson/crimson.py"
   },
   "radfact-ct": {
-    name: "各次 API 請求使用服務端 tokenizer；原子事實拆解是 LLM 任務",
+    name: "各次 API 請求使用服務端 tokenizer；單一影像發現敘述拆解是 LLM 任務",
     role: "tokenizer 將各階段 messages 轉成模型輸入；LLM 才負責把報告拆成 atomic phrases，再判每個 phrase 是否受支持。phrase 是計分對象，token 是模型讀取單位。",
     flow: ["tokenize Prompt → LLM 拆事實", "再次 tokenize → 雙向 entailment", "解析 JSON／YAML → P/R/F1"],
     example: "Effusion and atelectasis. 可由 LLM 拆成兩個事實；這不是 tokenizer 切出兩個 token。每個事實本身通常又包含多個模型 token。",
@@ -135,7 +135,7 @@ function renderTokenizerNote(id, sourceRoot) {
   if (!note) return "";
   return `<section class="tokenizer-lesson" aria-label="Tokenizer 在這個指標的角色">
     <h4>✂ Tokenizer 在這裡做什麼？</h4>
-    <p class="tokenizer-definition">Tokenizer 是把文字切成處理單位的工具；模型 tokenizer 還會將片段轉成詞彙表中的 ID。一個 token 不一定是一個字或英文單字，也不等於一個疾病或原子事實。</p>
+    <p class="tokenizer-definition">Tokenizer 是把文字切成處理單位的工具；模型 tokenizer 還會將片段轉成詞彙表中的 ID。一個 token 不一定是一個字或英文單字，也不等於一個疾病或單一影像發現敘述。</p>
     <p><strong>使用哪一套：</strong>${methodEscape(note.name)}</p>
     <p><strong>在這個指標的工作：</strong>${methodEscape(note.role)}</p>
     <ol class="method-flow">${note.flow.map((step, i) => `<li><span>${i + 1}</span>${methodEscape(step)}</li>`).join("")}</ol>

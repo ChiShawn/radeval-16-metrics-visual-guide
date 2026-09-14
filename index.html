@@ -564,7 +564,7 @@
       .metric-card { transition: none; }
     }
   </style>
-  <link rel="stylesheet" href="assets/metric-details.css">
+  <link rel="stylesheet" href="assets/metric-details.css?v=20260914">
 </head>
 <body>
   <a class="skip-link" href="#atlas">跳到 16 個指標</a>
@@ -634,6 +634,7 @@
         <span class="grammar-chip wrong">× 紅＝寫錯</span>
         <span class="grammar-chip missing">虛線＝漏寫</span>
       </div>
+      <p class="guide-version">教材更新版 2026.09.14 · 白話流程、RadFact Prompt 與地端 LLM 接法</p>
       <div id="radevalMethodMap"></div>
       <details class="boundary-primer">
         <summary>直接使用前：模型權重、環境需求與 8 組計分細節</summary>
@@ -729,11 +730,12 @@
     </div>
   </footer>
 
-  <script src="assets/metric-details.js"></script>
-  <script src="assets/method-profiles.js"></script>
-  <script src="assets/tokenizer-notes.js"></script>
-  <script src="assets/edge-cases.js"></script>
-  <script src="assets/operational-pitfalls.js"></script>
+  <script src="assets/metric-details.js?v=20260914"></script>
+  <script src="assets/method-profiles.js?v=20260914"></script>
+  <script src="assets/tokenizer-notes.js?v=20260914"></script>
+  <script src="assets/learning-notes.js?v=20260914"></script>
+  <script src="assets/edge-cases.js?v=20260914"></script>
+  <script src="assets/operational-pitfalls.js?v=20260914"></script>
   <script>
     const commit = "d412dc2da7df92f72d0b7128aee57b0237ec1b9a";
     const sourceRoot = `https://github.com/jbdel/RadEval/blob/${commit}/`;
@@ -824,7 +826,7 @@
       "green": "GREEN 裁判先把配對與六類錯誤分箱，再交給計數機產生分數。",
       "mammo-green": "MammoGREEN 裁判比較乳攝影像的鈣化、密度與風險差異。",
       "crimson": "CRIMSON 依四種臨床重量拉動負一到正一的數線指針，嚴重度錯誤會把分數往下拉。",
-      "radfact-ct": "兩側各拆成兩個原子事實；appendicitis 雙向支持，abscess 與 no abscess 明確矛盾。"
+      "radfact-ct": "兩側各拆成兩個單一影像發現敘述；appendicitis 雙向支持，abscess 與 no abscess 明確矛盾。"
     };
 
     function cartoonPath(metric) {
@@ -854,7 +856,7 @@
       { id:"green", name:"GREEN", room:"specialist", character:"🧑‍⚖️", memory:"先列六類重大錯誤，再由程式數錯誤", question:"LLM 能不能像臨床審稿者一樣，列出配對 finding 與六類重大錯誤？", oneLine:"GREEN 不是讓 LLM 隨口猜分數；LLM 先輸出結構化 critique，程式再計數。", ref:"Mild cardiomegaly with left pleural effusion.", cand:"Mild cardiomegaly.", verdict:"cardiomegaly 配對 M=1；left pleural effusion 遺漏 E=1，所以 GREEN=1/(1+1)=0.50。", steps:["LLM 逐類列出錯誤", "解析 matched findings 與六類重大錯誤", "代入 M/(M+E)"], can:"能說明錯誤種類，也能抓位置、嚴重度與遺漏變化。", cannot:"結果受模型、prompt 與輸出解析穩定性影響。", formula:"GREEN=M/(M+Esig)", formulaNote:"若 M=0，GREEN=0；輕微錯誤不進這個主分母。", source:"radeval/metrics/green_score/green.py" },
       { id:"mammo-green", name:"MammoGREEN", room:"specialist", character:"🎀", memory:"乳攝專科裁判，特別看 BI-RADS 與 density", question:"乳攝報告的 finding、描述、位置、BI-RADS 與 density 是否一致？", oneLine:"它沿用 matched findings 加錯誤計數，但把錯誤類別換成乳攝專用。", ref:"Scattered density. Benign calcifications. BI-RADS 2.", cand:"Heterogeneously dense breasts. Suspicious calcifications. BI-RADS 4.", verdict:"calcifications 核心 finding 配對 M=1；描述、BI-RADS、density 各錯 1 次，E=3，所以 score=0.25。", steps:["模型輸出固定 JSON", "數六類乳攝重大錯誤", "以 matched findings 除以 matched+errors"], can:"專門捕捉 BI-RADS、乳房密度與鈣化描述等乳攝問題。", cannot:"不同 provider、model 或 prompt 版本可能改變錯誤計數。", formula:"MammoGREEN=M/(M+E)", formulaNote:"E 是 false、missing、mischaracterization、location、BI-RADS、density 六類錯誤總數。", source:"radeval/metrics/green_score/mammo_green.py" },
       { id:"crimson", name:"CRIMSON", room:"specialist", character:"⚖️", memory:"同樣一個錯，急症比良性錯更重", question:"除了判對或判錯，能不能依臨床重要性決定錯誤重量？", oneLine:"CRIMSON 的核心不是多算一次 F1，而是讓 urgent、actionable、non-actionable、benign 有不同權重。", ref:"Mild pulmonary edema.", cand:"Severe pulmonary edema.", verdict:"教學判定：若 edema 是 actionable，w=0.5；嚴重度錯誤 a=0.5，最後 CRIMSON=0.50。", steps:["找正確、遺漏、虛假與屬性錯誤", "依臨床重要性給 w 與 a", "用正確額度減去加權錯誤"], can:"把『錯得多嚴重』放進分數，範圍可進入負值。", cannot:"權重由 judge 判定；只評估 abnormal/positive findings。", formula:"w={1,0.5,0.25,0}；S=(ΣCj−Efalse)/NG，範圍 (−1,1]", formulaNote:"負分代表加權 false findings 壓過正確額度，不等於圖表壞掉。", source:"radeval/metrics/crimson/crimson.py" },
-      { id:"radfact-ct", name:"RadFact-CT", room:"specialist", character:"⚛️", memory:"把 CT 報告拆成原子事實，再雙向查證", question:"Candidate 的每個事實有沒有被 Reference 支持，Reference 的每個事實有沒有被 Candidate 覆蓋？", oneLine:"它先用 LLM 拆 atomic phrases，再做兩個方向的 entailment。", ref:"Acute appendicitis. No abscess.", cand:"Acute appendicitis with an abscess.", verdict:"appendicitis 被支持；abscess 不只沒有支持，還與 Reference 的 no abscess 相反，因此 P、R 與 F1 都下降。", steps:["把兩份 CT 報告拆成原子事實", "Candidate→Reference 算 precision", "Reference→Candidate 算 recall，再合成 F1"], can:"直接檢查 hallucination 與 omission，並保留事實層級解釋。", cannot:"拆句與 entailment 都依賴 LLM；aggregate 與 per_sample 的尺度不同。", formula:"P=#candidate atoms entailed/#candidate atoms；R=#reference atoms entailed/#reference atoms", formulaNote:"逐筆輸出 0～1；aggregate 先平均 P、R 並乘 100，再重算 F1。", source:"radeval/metrics/radfact_ct/radfact_ct.py" }
+      { id:"radfact-ct", name:"RadFact-CT", room:"specialist", character:"⚛️", memory:"把 CT 報告拆成單一影像發現敘述，再雙向查證", question:"Candidate 的每個事實有沒有被 Reference 支持，Reference 的每個事實有沒有被 Candidate 覆蓋？", oneLine:"它先用 LLM 拆 atomic phrases，再做兩個方向的 entailment。", ref:"Acute appendicitis. No abscess.", cand:"Acute appendicitis with an abscess.", verdict:"appendicitis 被支持；abscess 不只沒有支持，還與 Reference 的 no abscess 相反，因此 P、R 與 F1 都下降。", steps:["把兩份 CT 報告拆成單一影像發現敘述", "Candidate→Reference 算 precision", "Reference→Candidate 算 recall，再合成 F1"], can:"直接檢查 hallucination 與 omission，並保留事實層級解釋。", cannot:"拆句與 entailment 都依賴 LLM；aggregate 與 per_sample 的尺度不同。", formula:"P=#candidate atoms entailed/#candidate atoms；R=#reference atoms entailed/#reference atoms", formulaNote:"逐筆輸出 0～1；aggregate 先平均 P、R 並乘 100，再重算 F1。", source:"radeval/metrics/radfact_ct/radfact_ct.py" }
     ];
 
     function visualFor(metric) {
@@ -873,7 +875,7 @@
       if (metric.id === "green") return `<div class="visual-title">LLM 先分六類，程式才計數</div><div class="flow-row"><span class="flow-node">false</span><span class="flow-node">missing</span><span class="flow-node">location</span><span class="flow-node">severity</span><span class="flow-node">unsupported comparison</span><span class="flow-node">omitted change</span><span class="flow-arrow">→</span><span class="flow-node">M/(M+E)</span></div>`;
       if (metric.id === "mammo-green") return `<div class="visual-title">本例 1 個 finding 配對，3 類乳攝錯誤</div><div class="flow-row"><span class="label-chip on">M=1 calcifications</span><span class="label-chip bad">Mischaracterization</span><span class="label-chip bad">BI-RADS 2→4</span><span class="label-chip bad">Density</span><span class="flow-arrow">→</span><span class="flow-node">1/(1+3)=.25</span></div>`;
       if (metric.id === "crimson") return `<div class="visual-title">四種臨床權重會把指針拉向 (−1,1] 的不同位置</div><div class="score-row"><div class="score-box"><strong>1.0</strong>urgent</div><div class="score-box"><strong>0.5</strong>actionable</div><div class="score-box"><strong>0.25</strong>non-actionable</div><div class="score-box"><strong>0</strong>benign</div></div><div class="window-line second">mild → severe：actionable w=.5、attribute error a=.5 → CRIMSON=.50；false findings 過重時可進入負值區。</div>`;
-      if (metric.id === "radfact-ct") return `<div class="visual-title">兩個原子事實，做兩個方向的 entailment</div><div class="flow-row"><span class="flow-node">Candidate→Reference</span><span class="flow-arrow">= precision .50</span><span class="flow-node">Reference→Candidate</span><span class="flow-arrow">= recall .50</span><span class="flow-node">F1 .50</span></div><div class="flow-row" style="margin-top:8px"><span class="label-chip on">appendicitis ✓</span><span class="label-chip bad">abscess × no abscess</span></div>`;
+      if (metric.id === "radfact-ct") return `<div class="visual-title">兩個單一影像發現敘述，做兩個方向的 entailment</div><div class="flow-row"><span class="flow-node">Candidate→Reference</span><span class="flow-arrow">= precision .50</span><span class="flow-node">Reference→Candidate</span><span class="flow-arrow">= recall .50</span><span class="flow-node">F1 .50</span></div><div class="flow-row" style="margin-top:8px"><span class="label-chip on">appendicitis ✓</span><span class="label-chip bad">abscess × no abscess</span></div>`;
       return `<div class="cartoon-judge"><div class="judge-face">${metric.character}</div><div class="judge-note">${metric.memory}</div></div>`;
     }
 

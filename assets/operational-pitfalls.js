@@ -607,7 +607,7 @@ const commonRunChecks = [
   ],
   [
     "外部 API 與本地模型都要有資料邊界",
-    "MammoGREEN、RadFact-CT 及 CRIMSON 的 API 路徑會送出報告；本地載入也會下載權重，並不代表零網路存取。",
+    "MammoGREEN、RadFact-CT 及 CRIMSON 的 API 路徑會將報告送到設定的 endpoint；可能是雲端，也可能是相容的地端服務。本地載入仍可能下載權重。",
     "先確認報告可否外傳與供應商設定；未獲許可只用本地路徑。API key 放環境／secret 管理；原始回覆與病人資料不進公開 GitHub 或 Notion。",
     "radeval/metrics/_llm_base.py",
     "LLMMetricBase"
@@ -634,7 +634,7 @@ function renderDeploymentChecklist(sourceRoot) {
     PyTorch 2.7 起提供 Blackwell／CUDA 12.8 支援，這是支援起點，不是建議照裝舊版。
     <a href="https://pytorch.org/blog/pytorch-2-7/" target="_blank" rel="noreferrer">PyTorch 官方說明</a>。</p>
     <p>固定版 RadEval README 列出的 known-good 組合包含 Python 3.11、torch 2.9.1+cu128、transformers 5.6.2、tokenizers 0.22.2。這是上游測試紀錄，<strong>不是已替你的 5090 驗收</strong>。先用團隊核准套件來源建立隔離環境，再檢查 driver、CUDA wheel 與其他套件相容性；不要沿用舊 GPU 的環境或只升級系統 CUDA。 ${pitfallSource("README.md", "上游環境紀錄", sourceRoot)}</p>
-    <p><strong>執行順序：</strong>環境檢查 → GPU 小運算 → 每個 encoder／classifier 單獨實跑 → GREEN／CRIMSON 單獨實跑 → 確認資料可外傳後才啟用 API。先不用額外加速套件；GPU 小運算成功也不能證明所有 attention kernels、模型與 dtype 都相容。</p>
+    <p><strong>執行順序：</strong>環境檢查 → GPU 小運算 → 每個 encoder／classifier 單獨實跑 → GREEN／CRIMSON 單獨實跑 → 確認 API endpoint 是地端或經允許的雲端，再啟用 API 指標。先不用額外加速套件；GPU 小運算成功也不能證明所有 attention kernels、模型與 dtype 都相容。</p>
     <p>RadEval 會先初始化所有選定模型；請把各指標放在獨立程序依序測，特別是 GREEN 7B 與 CRIMSON HF。先測可用顯存與代表性最長報告，再逐步增加 batch；避免一次建立全部 16 個 scorer。</p>
     <div class="code-panel"><div class="code-head"><strong>Linux：先查看顯卡／driver 與套件一致性</strong><button class="copy-code" type="button" data-copy-code aria-live="polite">複製程式</button></div><pre><code>nvidia-smi
 python -m pip check</code></pre></div>
